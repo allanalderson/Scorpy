@@ -4,3 +4,5 @@ Using a raspberry pi, python and pygame, I use this code to generate a score ove
 Your video switcher will need to have chroma-key  to use it properly.
 
 Screen size is set to 1920 x 1080, so output must be via the HDMI port.
+
+NOTE: The Raspberry Pi doesn't actually do the chroma keying, it just generates a score/timer overlay for your vision mixer keyer.
