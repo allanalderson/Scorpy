@@ -1,10 +1,22 @@
 # Scorpy
-Current Version 4.0
-Using a raspberry pi, python and pygame, I use this code to generate a score overlay (green chroma-key) for sporting events (football). It displays a timer, titles and scores
-Your video switcher will need to have chroma-key  to use it properly.
 
-Screen size is set to 1920 x 1080, so output must be via the HDMI port.
+Using a raspberry pi, python and pygame, I use this code to generate a score overlay (green chroma-key) for sporting events (football). It displays a timer, titles and scores and user images.
 
-NOTE: The Raspberry Pi doesn't actually do the chroma keying, it just generates a score/timer overlay for your vision mixer keyer.
+NOTE: The Raspberry Pi doesn't actually do the keying, it just generates a score/timer overlay for your vision mixer's keyer.
 
 (demo pix.jpg   ... With just 39 seconds to go, neither team has yet to score.)
+
+Keyboard operation:
+tab = enter the team-names and set timer/clock (tab again to exit)
+spacebar = On-air / Off-air toggle
+t = Titles.
+h = Halftime Score
+f = Fulltime Score
+r = Replay logo
+c = Clock (show/hide)
+- = clock stop
++ = clock start
+v = Variation
+? = Help screen
+b = Bars
+1~9 User images ( 1.jpg @ 1920x1080)
