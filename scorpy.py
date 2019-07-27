@@ -3,6 +3,7 @@
 3.7 Escape only on Help2 screen and RELEASE OK.
 3.8  Drop Shaddows complete. PreRelease Escape bugfix.
 4.0 RELEASE.
+4.1 key code tidy and timer set adjustment.Bugfix userimages 5-9
 '''
 
 
@@ -58,7 +59,7 @@ clock = pygame.time.Clock()
 shiftDown = False
 showTimer = True
 running = True
-activeTextBox = -1 # 1&2=teamNames;  3&4=scores;  0=NA
+activeTextBox = -1 # 1&2=teamNames;  3&4=scores;  11&12 Titles
 validChars = " `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
 shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
 
@@ -80,7 +81,7 @@ font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 60)
 fontDigital_big = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 250)
 fontDigital_corners = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 70)
 
-tabexit = " Use Cursers keys to move,  TAB key to exit. "
+tabexit = " Use Curser keys to move,  TAB key to exit. "
 tabexitR = font.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
@@ -476,8 +477,6 @@ def draw_big_score_screen():
 	team2ScoreBox.rect.center = [bigScorePositionRight, (windowSizeY // 2) +60]
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
-
-
 def draw_OFFAIR_filter():
 	if on_air == False:
 		screen.blit(green_filter, full_screen_rect)
@@ -581,9 +580,7 @@ while running:
 		draw_halftime_screen()
 	if live_screen_ID == "Fulltime":
 		draw_fulltime_screen()
-	if live_screen_ID == "0":
-		draw_LOGO_screen()
-		on_air = False
+
 	if live_screen_ID == "1":
 		draw_USER1_screen()
 	if live_screen_ID == "2":
@@ -592,6 +589,21 @@ while running:
 		draw_USER3_screen()
 	if live_screen_ID == "4":
 		draw_USER4_screen()
+	if live_screen_ID == "5":
+		draw_USER5_screen()
+	if live_screen_ID == "6":
+		draw_USER6_screen()
+	if live_screen_ID == "7":
+		draw_USER7_screen()
+	if live_screen_ID == "8":
+		draw_USER8_screen()
+	if live_screen_ID == "9":
+		draw_USER9_screen()
+	if live_screen_ID == "0":
+		draw_LOGO_screen()
+		on_air = False
+
+
 	if live_screen_ID == "Bars":
 		screen.blit(bars, full_screen_rect)
 		draw_OFFAIR_filter()
@@ -618,9 +630,10 @@ while running:
 			if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
 				shiftDown = False
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE and live_screen_ID == "Help2":
-				pygame.quit()
-				quit()
+			if event.key == pygame.K_ESCAPE:
+				if live_screen_ID == "Help2":
+					pygame.quit()
+					quit()
 			if event.key == pygame.K_TAB:
 				if live_screen_ID == "input":  # if inputscreen true then
 					activeTextBox = 0
@@ -640,25 +653,25 @@ while running:
 					live_screen_ID = "Help1"
 					on_air = False
 					activeTextBox = 11
-			if live_screen_ID == "Scores" or live_screen_ID == "Halftime" or live_screen_ID == "Fulltime":
-				if event.key == pygame.K_LEFT:
-					activeTextBox = 3
-				if event.key == pygame.K_RIGHT:
-					activeTextBox = 4
-				if  activeTextBox == 0:
-					if event.key == pygame.K_DOWN and LT_box_position_UP < 1045:
-						LT_box_position_UP = LT_box_position_UP + 2
-					if event.key == pygame.K_UP and LT_box_position_UP > 700:
-						LT_box_position_UP = LT_box_position_UP - 2
-			# Keys...
 			if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
+				pass
 				timer_running = False
 			if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS or event.key == pygame.K_EQUALS:
+				pass
 				timer_running = True
-			if live_screen_ID == "Scores":
-				if event.key == pygame.K_c:
-					showTimer = not showTimer
-
+			if live_screen_ID == "Scores" or live_screen_ID == "Halftime" or live_screen_ID == "Fulltime":
+				if event.key == pygame.K_LEFT: # Team1 score
+					activeTextBox = 3
+				if event.key == pygame.K_RIGHT: # Team2 score
+					activeTextBox = 4
+				if live_screen_ID == "Scores":
+					if event.key == pygame.K_c:
+						showTimer = not showTimer
+					if activeTextBox == 0: # Lower third position
+						if event.key == pygame.K_DOWN and LT_box_position_UP < 1045:
+							LT_box_position_UP = LT_box_position_UP + 2
+						if event.key == pygame.K_UP and LT_box_position_UP > 700:
+							LT_box_position_UP = LT_box_position_UP - 2
 			if live_screen_ID != "input" and on_air == False:
 				if event.key == pygame.K_t:
 					live_screen_ID = "Titles"
@@ -679,6 +692,20 @@ while running:
 					live_screen_ID = "3"
 				if event.key == pygame.K_4:
 					live_screen_ID = "4"
+				if event.key == pygame.K_5:
+					live_screen_ID = "5"
+				if event.key == pygame.K_6:
+					live_screen_ID = "6"
+				if event.key == pygame.K_7:
+					live_screen_ID = "7"
+				if event.key == pygame.K_8:
+					live_screen_ID = "8"
+				if event.key == pygame.K_9:
+					live_screen_ID = "9"
+
+
+
+
 				if event.key == pygame.K_r:
 					live_screen_ID = "Replay"
 				if event.key == pygame.K_b:
@@ -767,7 +794,7 @@ while running:
 					title2name.text = title2name.text[:-1]
 				title2name.add_chr(pygame.key.name(event.key))
 				title2name.update()
-			elif activeTextBox == 1: #team 1
+			elif activeTextBox == 1: #team1 Name
 				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN:
 					activeTextBox = 2
 				if event.key == pygame.K_UP :
@@ -781,7 +808,7 @@ while running:
 					team1name.text = team1name.text[:-1]
 				team1name.add_chr(pygame.key.name(event.key))
 				team1name.update()
-			elif activeTextBox == 2: # team2
+			elif activeTextBox == 2: # team2 Name
 				if event.key == pygame.K_UP:
 					activeTextBox = 1
 				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN:
@@ -799,12 +826,12 @@ while running:
 				if event.key == pygame.K_UP:
 					activeTextBox = 2
 				if event.key == pygame.K_LEFT:
-					if countdown_minutes > 15:
+					if countdown_minutes > 20:
 						countdown_minutes = countdown_minutes - 5 # xxx
 					else:
 						countdown_minutes = countdown_minutes - 1  # xxx
 				if event.key == pygame.K_RIGHT:
-					if countdown_minutes > 14:
+					if countdown_minutes > 19:
 						countdown_minutes = countdown_minutes + 5  # xxx
 					else:
 						countdown_minutes = countdown_minutes + 1  # xxx
