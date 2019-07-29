@@ -14,9 +14,6 @@ h = Halftime Score
 f = Fulltime Score
 r = Replay logo
 c = Clock (show/hide)
-- = clock stop
-+ = clock start
 v = Variation
-? = Help screen
 b = Bars
-1~9 User images ( 1.jpg @ 1920x1080)
+1~9 User images (e.g:  1.jpg @ 1920x1080)
