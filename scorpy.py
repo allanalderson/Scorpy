@@ -28,8 +28,8 @@ pygame.mouse.set_visible(False)
 dropShaddowDistance = 5
 bigScorePositionRight = 1443
 bigScorePositionLeft = 480
-countdown_seconds = 40
-countdown_minutes = 0
+countdown_seconds = 0
+countdown_minutes = 40
 timer_running = False
 variation_timer = 1
 variation_replay = 1
