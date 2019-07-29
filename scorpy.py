@@ -3,6 +3,9 @@
 4.1 key code tidy and timer set adjustment.Bugfix userimages 5-9
 4.2 Minor tweeks to greens and better clock routine
 4.3 User Image Help
+4.4 New fulltime and halftime graphics.
+	Timer vanish after 5 seconds below 0:00
+	Timer continues to run during input screen.
 '''
 
 
@@ -25,21 +28,22 @@ pygame.mouse.set_visible(False)
 dropShaddowDistance = 5
 bigScorePositionRight = 1443
 bigScorePositionLeft = 480
-countdown_seconds = 0
-countdown_minutes = 40
+countdown_seconds = 40
+countdown_minutes = 0
+timer_running = False
 variation_timer = 1
+variation_replay = 1
 countdown_ticks = (countdown_minutes*60)+(countdown_seconds)
 countdownMinutesText = str(countdown_minutes)
 corner1 = [(windowSizeX // 2) - 770, (windowSizeY // 2) - 440] #
 corner2 = [(windowSizeX // 2) + 770, (windowSizeY // 2) - 440] #
 corner3 = [(windowSizeX // 2) + 770, (windowSizeY // 2) + 440]
 corner4 = [(windowSizeX // 2) - 770, (windowSizeY // 2) + 440]
-timer_running = True
-variation_replay = 1
+
 white = (250,250,250)
-yellow = (220,220,60)
+yellow = (220,200,160)
 black = (0,0,0)
-blue = (20, 20, 220)
+blue = (30, 30, 110)
 red = (250, 60, 60)
 greenScreen = (0, 150, 0)
 green2 = (0, 170, 0)
@@ -70,12 +74,6 @@ tabexit = " Use Curser keys to move,  TAB key to exit. "
 tabexitR = font.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
-halftimeFont = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 80)
-halftime = "  HALF TIME  "
-fulltime = "  FULL TIME  "
-halftime_text = halftimeFont.render(halftime, True, yellow, blue)
-fulltime_text = halftimeFont.render(fulltime, True, yellow, blue)
-halftime_text_rect = halftime_text.get_rect()
 titlesRequestText = " Titles:                 "
 teamsRequestText  =  " Teams:               "
 requestFont = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 180)
@@ -89,6 +87,8 @@ full_screen_rect = [0, 0]
 full_screen_rect = bars.get_rect()
 full_screen_rect.center = screen.get_rect().center  # Set image centers
 bars = pygame.image.load('Resources/Graphics/bars1080.png').convert()
+halfTimeGraphic = pygame.image.load('Resources/Graphics/halfTimeImage.png').convert_alpha()
+fullTimeGraphic = pygame.image.load('Resources/Graphics/fullTimeImage.png').convert_alpha()
 logo = pygame.image.load('Resources/Graphics/logo.png').convert()
 help1 = pygame.image.load('Resources/Graphics/help1.png').convert()
 help2 = pygame.image.load('Resources/Graphics/help2.png').convert()
@@ -237,7 +237,7 @@ def draw_input_screen():
 	global countdown_minutes
 	global showTimer
 	global title1name
-	timer_running = False
+	# timer_running = False
 	showTimer = False
 	draw_greenscreen()
 	team1name.green0()
@@ -319,14 +319,12 @@ def draw_replay_screen():
 	draw_OFFAIR_filter()
 def draw_halftime_screen():
 	draw_greenscreen()
-	halftime_text_rect.center = (windowSizeX // 2, 160)
-	screen.blit(halftime_text, halftime_text_rect)
+	screen.blit(halfTimeGraphic, full_screen_rect)
 	draw_big_score_screen()
 	draw_OFFAIR_filter()
 def draw_fulltime_screen():
 	draw_greenscreen()
-	halftime_text_rect.center = (windowSizeX // 2, 160)
-	screen.blit(fulltime_text, halftime_text_rect)
+	screen.blit(fullTimeGraphic, full_screen_rect)
 	draw_big_score_screen()
 	draw_OFFAIR_filter()
 def draw_score_screen():
@@ -479,13 +477,16 @@ def draw_LOGO_screen():
 def update_clocks():
 	global countdown_ticks
 	global countdownText
+	global countdown_seconds
+	global countdown_minutes
 	global showTimer
 	if timer_running == True:
 		countdown_ticks = countdown_ticks - 1
-	if countdown_ticks < 5:
+	if countdown_ticks < -5:
 		showTimer = False
-	countdown_minutes = countdown_ticks//60
-	countdown_seconds = countdown_ticks % 60
+	if countdown_ticks > -1:
+		countdown_minutes = countdown_ticks//60
+		countdown_seconds = countdown_ticks % 60
 	if countdown_seconds < 10:
 		countdownSecondsText = "0" + str(countdown_seconds)
 	else:
@@ -572,7 +573,7 @@ while running:
 
 
 	for event in pygame.event.get():
-		if event.type == USEREVENT + 0 and  countdown_ticks > 0 :
+		if event.type == USEREVENT + 0:
 			update_clocks()
 		if event.type == pygame.QUIT:
 			running = False
@@ -587,14 +588,12 @@ while running:
 			if event.key == pygame.K_TAB:
 				if live_screen_ID == "input":  # if inputscreen true then
 					activeTextBox = 0
-
 					live_screen_ID = "Titles"  # exit.
 					on_air = False
 				else:  # if inputscreen not active...
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
-
 			# General key downs ---------------------------------\
 			if live_screen_ID != "input" : # Any screen except 'input'
 				if event.key == pygame.K_SPACE:
@@ -758,6 +757,9 @@ while running:
 				if event.key == pygame.K_UP:
 					activeTextBox = 1
 				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN:
+					timer_running = False
+					countdown_seconds = 0
+					countdown_minutes = 40
 					activeTextBox = 5
 				if event.key == pygame.K_SPACE:
 					team2name.text += " "
@@ -778,7 +780,7 @@ while running:
 						if countdown_minutes > 0:
 							countdown_minutes = countdown_minutes - 1
 				if event.key == pygame.K_RIGHT:
-					if countdown_minutes > 19:
+					if countdown_minutes > 24:
 						countdown_minutes = countdown_minutes + 5
 					else:
 						countdown_minutes = countdown_minutes + 1
