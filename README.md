@@ -10,10 +10,10 @@ Keyboard operation:
 tab = enter the team-names and set timer/clock (tab again to exit)
 spacebar = On-air / Off-air toggle
 t = Titles.
-h = Halftime Score
-f = Fulltime Score
-r = Replay logo
-c = Clock (show/hide)
-v = Variation
-b = Bars
-1~9 User images (e.g:  1.jpg @ 1920x1080)
+h = Halftime Score.
+f = Fulltime Score.
+r = Replay logo.
+c = Clock (show/hide).
+v = Variation.
+b = Bars.
+1~9 User images (e.g:  1.jpg @ 1920x1080).
