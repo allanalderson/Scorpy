@@ -2,6 +2,7 @@
 4.0 RELEASE.
 4.1 key code tidy and timer set adjustment.Bugfix userimages 5-9
 4.2 Minor tweeks to greens and better clock routine
+4.3 User Image Help
 '''
 
 
@@ -188,39 +189,40 @@ lowerThirdText.text = ""
 try:
 	userImage1 = pygame.image.load('../../mnt/volume/image1.jpg')
 except:
-	userImage1 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage1 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage2 = pygame.image.load('../../mnt/volume/2.jpg')
 except:
-	userImage2 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage2 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage3 = pygame.image.load('../../mnt/volume/3.jpg')
 except:
-	userImage3 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage3 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage4 = pygame.image.load('../../mnt/volume/4.jpg')
 except:
-	userImage4 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage4 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage5 = pygame.image.load('../../mnt/volume/5.jpg')
 except:
-	userImage5 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage5 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage6 = pygame.image.load('../../mnt/volume/6.jpg')
 except:
-	userImage6 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage6 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage7 = pygame.image.load('../../mnt/volume/7.jpg')
 except:
-	userImage7 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage7 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage8 = pygame.image.load('../../mnt/volume/8.jpg')
 except:
-	userImage8 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage8 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
 try:
 	userImage9 = pygame.image.load('../../mnt/volume/9.jpg')
 except:
-	userImage9 = pygame.image.load('Resources/Graphics/logo.png').convert()
+	userImage9 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+
 
 
 def draw_greenscreen():
