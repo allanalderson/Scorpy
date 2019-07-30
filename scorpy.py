@@ -7,6 +7,7 @@
 	Timer vanish after 5 seconds below 0:00
 	Timer continues to run during input screen.
 4.5 Score selection indicator.
+4.6 Minor tweeks to score selection screen
 '''
 
 
@@ -47,9 +48,9 @@ black = (0,0,0)
 blue = (30, 30, 110)
 red = (250, 60, 60)
 greenScreen = (0, 150, 0)
-green2 = (0, 170, 0)
+green2 = (0, 175, 0)
 green3 = (15, 195, 15)
-green4 = (30, 245, 30) # bright green for timer preview
+green4 = (20, 245, 20) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
 clock = pygame.time.Clock()
@@ -397,6 +398,11 @@ def draw_score_preview_screen():
 	if activeTextBox == 4:
 		team2ScoreBox.green4()
 		team2name.green4()
+	if activeTextBox == 0:
+		team1ScoreBox.green4()
+		team2ScoreBox.green4()
+		team1name.green4()
+		team2name.green4()
 	team1name.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + 300]
 	team2name.rect.center = [bigScorePositionRight, ((windowSizeY // 2) + 300)]
 	team1ScoreBox.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + 20]
@@ -405,8 +411,17 @@ def draw_score_preview_screen():
 	screen.blit(team2name.image, team2name.rect)
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
-	# Timer code
 	draw_timer_preview()
+def draw_timer_preview():
+	if timer_running == False:
+		countdownTextR = fontDigital_big.render(countdownText, False, green2, green3)  # Render it.
+	elif timer_running == True and activeTextBox == 0:
+		countdownTextR = fontDigital_big.render(countdownText, False, green4)  # Render it.
+	else:
+		countdownTextR = fontDigital_big.render(countdownText, False, green3)  # Render it.
+	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
+	countdown_rect.center = [windowSizeX // 2, 145]  # Put the center of the rect somewhere
+	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 def draw_big_score_screen():
 	team1name.fontTeamNameUnderScore()
 	team2name.fontTeamNameUnderScore()
@@ -522,16 +537,7 @@ def draw_timer_panel():
 	if variation_timer == 4:
 		countdown_rect.center = corner4  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
-def draw_timer_preview():
-	if timer_running == False:
-		countdownTextR = fontDigital_big.render(countdownText, False, green2,green3) # Render it.
-	elif timer_running == True and activeTextBox == 0:
-		countdownTextR = fontDigital_big.render(countdownText, False, green4)  # Render it.
-	else:
-		countdownTextR = fontDigital_big.render(countdownText, False, green3)  # Render it.
-	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
-	countdown_rect.center = [windowSizeX//2, 145]  # Put the center of the rect somewhere
-	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
+
 
 # ------------------------------------------------
 pygame.time.set_timer(USEREVENT + 0, 1000)
