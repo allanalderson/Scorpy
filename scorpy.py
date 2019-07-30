@@ -6,6 +6,7 @@
 4.4 New fulltime and halftime graphics.
 	Timer vanish after 5 seconds below 0:00
 	Timer continues to run during input screen.
+4.5 Score selection indicator.
 '''
 
 
@@ -47,8 +48,8 @@ blue = (30, 30, 110)
 red = (250, 60, 60)
 greenScreen = (0, 150, 0)
 green2 = (0, 170, 0)
-green3 = (20, 220, 20)
-green4 = (30, 240, 30) # bright green for timer preview
+green3 = (15, 195, 15)
+green4 = (30, 245, 30) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
 clock = pygame.time.Clock()
@@ -68,7 +69,7 @@ LT_counter = 0
 LT_box_position_UP = 1045
 lowerThirdCurrentPosition = 1105 #  1105 is offscreen, (1045 is onscreen)
 font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 60)
-fontDigital_big = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 250)
+fontDigital_big = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 260)
 fontDigital_corners = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 70)
 tabexit = " Use Curser keys to move,  TAB key to exit. "
 tabexitR = font.render(tabexit, True, greenScreen, green2)
@@ -137,7 +138,7 @@ class TextBox(pygame.sprite.Sprite):
 		self.image = self.font.render(self.text, True, white)
 		self.update()
 	def fontMassiveScore(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 550)
+		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 500)
 		self.image = self.font.render(self.text, True, green3)
 		self.update()
 	def fontLowerThird(self):
@@ -390,10 +391,16 @@ def draw_score_preview_screen():
 	team2name.green3()
 	team1ScoreBox.fontMassiveScore()
 	team2ScoreBox.fontMassiveScore()
-	team1name.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + 270]
-	team2name.rect.center = [bigScorePositionRight, ((windowSizeY // 2) + 270)]
-	team1ScoreBox.rect.center = [bigScorePositionLeft, (windowSizeY // 2) - 0]
-	team2ScoreBox.rect.center = [bigScorePositionRight, (windowSizeY // 2) - 0]
+	if activeTextBox == 3:
+		team1ScoreBox.green4()
+		team1name.green4()
+	if activeTextBox == 4:
+		team2ScoreBox.green4()
+		team2name.green4()
+	team1name.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + 300]
+	team2name.rect.center = [bigScorePositionRight, ((windowSizeY // 2) + 300)]
+	team1ScoreBox.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + 20]
+	team2ScoreBox.rect.center = [bigScorePositionRight, (windowSizeY // 2) + 20]
 	screen.blit(team1name.image, team1name.rect)
 	screen.blit(team2name.image, team2name.rect)
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
@@ -517,11 +524,13 @@ def draw_timer_panel():
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 def draw_timer_preview():
 	if timer_running == False:
-		countdownTextR = fontDigital_big.render(countdownText, False, green2,green4) # Render it.
-	else:
+		countdownTextR = fontDigital_big.render(countdownText, False, green2,green3) # Render it.
+	elif timer_running == True and activeTextBox == 0:
 		countdownTextR = fontDigital_big.render(countdownText, False, green4)  # Render it.
+	else:
+		countdownTextR = fontDigital_big.render(countdownText, False, green3)  # Render it.
 	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
-	countdown_rect.center = [windowSizeX//2, 180]  # Put the center of the rect somewhere
+	countdown_rect.center = [windowSizeX//2, 145]  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 
 # ------------------------------------------------
@@ -597,6 +606,8 @@ while running:
 			# General key downs ---------------------------------\
 			if live_screen_ID != "input" : # Any screen except 'input'
 				if event.key == pygame.K_SPACE:
+					if activeTextBox > 0:
+						activeTextBox = 0
 					on_air = not on_air
 					transition_trigger = True
 					if live_screen_ID == "Bars" and activeTextBox == -1:
