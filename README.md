@@ -30,6 +30,8 @@ v = Variation.
 
 b = Bars.
 
+? = help screen.
+
 1~9 User images (e.g:  1.jpg @ 1920x1080).
 
 The Resources folder contains fonts and images that Scorpy needs (put in the same directory as scorpy.py)
