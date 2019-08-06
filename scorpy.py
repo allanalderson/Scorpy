@@ -9,6 +9,7 @@
 4.5 Score selection indicator.
 4.6 Minor tweeks to score selection screen
 4.7 Now responding to a numeric keypad
+4.8 Count-up Ready
 '''
 
 
@@ -42,7 +43,7 @@ corner1 = [(windowSizeX // 2) - 770, (windowSizeY // 2) - 440] #
 corner2 = [(windowSizeX // 2) + 770, (windowSizeY // 2) - 440] #
 corner3 = [(windowSizeX // 2) + 770, (windowSizeY // 2) + 440]
 corner4 = [(windowSizeX // 2) - 770, (windowSizeY // 2) + 440]
-
+counting_down = True
 white = (250,250,250)
 yellow = (220,200,160)
 black = (0,0,0)
@@ -414,6 +415,11 @@ def draw_score_preview_screen():
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
 	draw_timer_preview()
 def draw_timer_preview():
+	triangleY = 175
+	if counting_down == True:
+		pygame.draw.polygon(screen, green3, [[(windowSizeX // 2-40), (triangleY+100)], [(windowSizeX // 2+40), (triangleY+100)],[(windowSizeX // 2), (triangleY+140)]])
+	else:
+		pygame.draw.polygon(screen, green3, [[(windowSizeX // 2-40), (triangleY-100)], [(windowSizeX // 2+40), (triangleY-100)],[(windowSizeX // 2), (triangleY-140)]])
 	if timer_running == False:
 		countdownTextR = fontDigital_big.render(countdownText, False, green2, green3)  # Render it.
 	elif timer_running == True and activeTextBox == 0:
@@ -421,7 +427,7 @@ def draw_timer_preview():
 	else:
 		countdownTextR = fontDigital_big.render(countdownText, False, green3)  # Render it.
 	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
-	countdown_rect.center = [windowSizeX // 2, 145]  # Put the center of the rect somewhere
+	countdown_rect.center = [windowSizeX // 2, 170]  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 def draw_big_score_screen():
 	team1name.fontTeamNameUnderScore()
@@ -504,7 +510,10 @@ def update_clocks():
 	global countdown_minutes
 	global showTimer
 	if timer_running == True:
-		countdown_ticks = countdown_ticks - 1
+		if counting_down == True:
+			countdown_ticks = countdown_ticks - 1
+		else:
+			countdown_ticks = countdown_ticks + 1
 	if countdown_ticks < -5:
 		showTimer = False
 	if countdown_ticks > -1:
@@ -779,6 +788,7 @@ while running:
 					countdown_seconds = 0
 					countdown_minutes = 40
 					activeTextBox = 5
+					counting_down = True
 				if event.key == pygame.K_SPACE:
 					team2name.text += " "
 					team2name.update()
@@ -801,6 +811,8 @@ while running:
 					else:
 						if countdown_minutes > 0:
 							countdown_minutes = countdown_minutes - 1
+							if countdown_minutes < 1:
+								counting_down = False
 				if event.key == pygame.K_RIGHT:
 					if countdown_minutes > 24:
 						countdown_minutes = countdown_minutes + 5
