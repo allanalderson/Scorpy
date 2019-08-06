@@ -9,7 +9,7 @@
 4.5 Score selection indicator.
 4.6 Minor tweeks to score selection screen
 4.7 Now responding to a numeric keypad
-4.8 Count-up Ready
+4.8 Count-up Ready and minor color changes
 '''
 
 
@@ -47,12 +47,12 @@ counting_down = True
 white = (250,250,250)
 yellow = (220,200,160)
 black = (0,0,0)
-blue = (30, 30, 110)
+blue = (30, 30, 130)
 red = (250, 60, 60)
 greenScreen = (0, 150, 0)
 green2 = (0, 175, 0)
-green3 = (15, 195, 15)
-green4 = (20, 245, 20) # bright green for timer preview
+green3 = (10, 195, 10)
+green4 = (15, 230, 15) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
 clock = pygame.time.Clock()
