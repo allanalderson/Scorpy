@@ -11,6 +11,7 @@
 4.7 Now responding to a numeric keypad
 4.8 Count-up Ready and minor color changes
 4.9 Added LT Clock , some refactoring
+5.0 Changed 'Resources' folder to 'scorpy_resources'
 
 '''
 
@@ -71,16 +72,16 @@ shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
 live_screen_ID = "Bars"
 on_air = True
 
-font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 60)
-fontDigital_big = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 260)
-fontDigital_timer = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 62)
+font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)
+fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
+fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 62)
 tabexit = " Use curser keys to move,  TAB key to exit. "
 tabexitR = font.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
 titlesRequestText = " Titles                       "
 teamsRequestText  =  " Teams                     "
-requestFont = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 180)
+requestFont = pygame.font.Font('scorpy_resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 180)
 teamNamesRequestText = requestFont.render(teamsRequestText, True, greenScreen, green2)
 teamNamesRequestText_rect = teamNamesRequestText.get_rect()
 titlesNamesRequestText = requestFont.render(titlesRequestText, True, greenScreen, green2)
@@ -90,15 +91,15 @@ help1 = screen
 full_screen_rect = [0, 0]
 full_screen_rect = bars.get_rect()
 full_screen_rect.center = screen.get_rect().center  # Set image centers
-bars = pygame.image.load('Resources/Graphics/bars1080.png').convert()
-halfTimeGraphic = pygame.image.load('Resources/Graphics/halfTimeImage.png').convert_alpha()
-fullTimeGraphic = pygame.image.load('Resources/Graphics/fullTimeImage.png').convert_alpha()
-logo = pygame.image.load('Resources/Graphics/logo.png').convert()
-help1 = pygame.image.load('Resources/Graphics/help1.png').convert()
-help2 = pygame.image.load('Resources/Graphics/help2.png').convert()
-liveshot_graphic = pygame.image.load('Resources/Graphics/liveshot.png').convert()
-titleVS_graphic = pygame.image.load('Resources/Graphics/VS_graphic.png').convert_alpha()
-replay = pygame.image.load('Resources/Graphics/replay.png').convert_alpha()
+bars = pygame.image.load('scorpy_resources/Graphics/bars1080.png').convert()
+halfTimeGraphic = pygame.image.load('scorpy_resources/Graphics/halfTimeImage.png').convert_alpha()
+fullTimeGraphic = pygame.image.load('scorpy_resources/Graphics/fullTimeImage.png').convert_alpha()
+logo = pygame.image.load('scorpy_resources/Graphics/logo.png').convert()
+help1 = pygame.image.load('scorpy_resources/Graphics/help1.png').convert()
+help2 = pygame.image.load('scorpy_resources/Graphics/help2.png').convert()
+liveshot_graphic = pygame.image.load('scorpy_resources/Graphics/liveshot.png').convert()
+titleVS_graphic = pygame.image.load('scorpy_resources/Graphics/VS_graphic.png').convert_alpha()
+replay = pygame.image.load('scorpy_resources/Graphics/replay.png').convert_alpha()
 replay_rect = replay.get_rect() # Get it's dimentions.
 replay_rect.center = replay.get_rect().center  # Set it's center.
 
@@ -115,7 +116,7 @@ class TextBox(pygame.sprite.Sprite):
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 		self.text = ""
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 50) #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 50) #55
 		self.image = self.font.render("", True, [70, 255, 70])
 		self.rect = self.image.get_rect()
 	def add_chr(self, char):
@@ -143,27 +144,27 @@ class TextBox(pygame.sprite.Sprite):
 	def black(self):
 		self.image = self.font.render(self.text, True, black)
 	def fontBigScore(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Light.ttf', 300)
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Light.ttf', 300)
 		self.image = self.font.render(self.text, True, white)
 		self.update()
 	def fontMassiveScore(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 500)
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 500)
 		self.image = self.font.render(self.text, True, green3)
 		self.update()
 	def fontLowerThird(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 40)
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 40)
 		self.update()
 	def fontTeamNameUnderScore(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 80)  #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 80)  #55
 		self.update()
 	def fontTeamVS(self):
-		self.font = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 100)  #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 100)  #55
 		self.update()
 	def fontMajorTitle(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 90)  #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 90)  #55
 		self.update()
 	def fontMinorTitle(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 70)  #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 70)  #55
 		self.update()
 	def blue(self):
 		self.image = self.font.render(self.text, True, blue)
@@ -200,39 +201,39 @@ lowerThirdText.text = ""
 try:
 	userImage1 = pygame.image.load('../../mnt/volume/image1.jpg')
 except:
-	userImage1 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage1 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage2 = pygame.image.load('../../mnt/volume/2.jpg')
 except:
-	userImage2 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage2 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage3 = pygame.image.load('../../mnt/volume/3.jpg')
 except:
-	userImage3 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage3 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage4 = pygame.image.load('../../mnt/volume/4.jpg')
 except:
-	userImage4 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage4 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage5 = pygame.image.load('../../mnt/volume/5.jpg')
 except:
-	userImage5 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage5 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage6 = pygame.image.load('../../mnt/volume/6.jpg')
 except:
-	userImage6 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage6 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage7 = pygame.image.load('../../mnt/volume/7.jpg')
 except:
-	userImage7 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage7 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage8 = pygame.image.load('../../mnt/volume/8.jpg')
 except:
-	userImage8 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage8 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 try:
 	userImage9 = pygame.image.load('../../mnt/volume/9.jpg')
 except:
-	userImage9 = pygame.image.load('Resources/Graphics/missingImage.png').convert()
+	userImage9 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
 
 
 
