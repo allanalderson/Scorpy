@@ -6,11 +6,12 @@ Make sure the raspberry-pi has the screen resolution set to 1920x1080
 
 NOTE: The Raspberry Pi doesn't actually do the keying, it just generates a score/timer overlay for your vision mixer's keyer.
 
-(demo images.jpg   ... With 29 miutes, 36 seconds, Magpies are in front 13 to 7)
+(see demo images.jpg   ... With 29 miutes, 36 seconds, Magpies are in front 13 to 7)
 
+___________________________________
 Keyboard operation:
 
-curser-keys: Move/adjust.
+curser (up, down, left, right): Move/adjust scores.
 
 tab = enter the team-names and set timer/clock (tab again to exit)
 
@@ -26,9 +27,13 @@ r = Replay logo.
 
 c = Clock (show/hide).
 
-v = Variation.
++ = Clock run.
 
-b = Bars.
+- = Clock stop.
+
+v = Variation on the current theme.
+
+b = Bars (but no tone)
 
 ? = help screen.
 
@@ -36,4 +41,4 @@ b = Bars.
 
 The folder 'scorpy_resources' contains fonts and images that Scorpy needs (put in the same directory as scorpy.py)
 
-NOTE: YOU NEED TO BE 'OFF-AIR' TO MAKE CHANGES.
+NOTE: YOU NEED TO BE 'OFF-AIR' TO MAKE ANY CHANGES.
