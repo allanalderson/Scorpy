@@ -10,6 +10,8 @@
 4.6 Minor tweeks to score selection screen
 4.7 Now responding to a numeric keypad
 4.8 Count-up Ready and minor color changes
+4.9 Added LT Clock , some refactoring
+
 '''
 
 
@@ -35,51 +37,49 @@ bigScorePositionLeft = 480
 countdown_seconds = 0
 countdown_minutes = 40
 timer_running = False
-variation_timer = 1
+variation_timer = 5
 variation_replay = 1
 countdown_ticks = (countdown_minutes*60)+(countdown_seconds)
 countdownMinutesText = str(countdown_minutes)
-corner1 = [(windowSizeX // 2) - 770, (windowSizeY // 2) - 440] #
-corner2 = [(windowSizeX // 2) + 770, (windowSizeY // 2) - 440] #
-corner3 = [(windowSizeX // 2) + 770, (windowSizeY // 2) + 440]
-corner4 = [(windowSizeX // 2) - 770, (windowSizeY // 2) + 440]
+
 counting_down = True
 white = (250,250,250)
 yellow = (220,200,160)
 black = (0,0,0)
 blue = (30, 30, 130)
-red = (250, 60, 60)
+red = (250, 80, 80)
 greenScreen = (0, 150, 0)
 green2 = (0, 175, 0)
 green3 = (10, 195, 10)
-green4 = (15, 230, 15) # bright green for timer preview
+green4 = (15, 240, 15) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
 clock = pygame.time.Clock()
-shiftDown = False
-showTimer = True
-running = True
-activeTextBox = -1 # 1&2=teamNames;  3&4=scores;  11&12 Titles
-validChars = " `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
-shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
-live_screen_ID = "Bars"
-on_air = True
-lowerThirdBoxThickness = 110
+lowerThirdBoxThickness = 190 #110
 LT_rasing = False
 LT_lowering = False
 transition_trigger = False
 LT_counter = 0
 LT_box_position_UP = 1045
-lowerThirdCurrentPosition = 1105 #  1105 is offscreen, (1045 is onscreen)
+LT_MovementPosition = 1105 #  1105 is offscreen, (1045 is onscreen)
+shiftDown = False
+showTimer = False
+running = True
+activeTextBox = 0 # 1&2=teamNames;  3&4=scores;  11&12 Titles
+validChars = " `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
+shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
+live_screen_ID = "Bars"
+on_air = True
+
 font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 60)
 fontDigital_big = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 260)
-fontDigital_corners = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 70)
-tabexit = " Use Curser keys to move,  TAB key to exit. "
+fontDigital_timer = pygame.font.Font('Resources/Fonts/digital-7 (mono).ttf', 62)
+tabexit = " Use curser keys to move,  TAB key to exit. "
 tabexitR = font.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
-titlesRequestText = " Titles:                 "
-teamsRequestText  =  " Teams:               "
+titlesRequestText = " Titles                       "
+teamsRequestText  =  " Teams                     "
 requestFont = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 180)
 teamNamesRequestText = requestFont.render(teamsRequestText, True, greenScreen, green2)
 teamNamesRequestText_rect = teamNamesRequestText.get_rect()
@@ -101,6 +101,12 @@ titleVS_graphic = pygame.image.load('Resources/Graphics/VS_graphic.png').convert
 replay = pygame.image.load('Resources/Graphics/replay.png').convert_alpha()
 replay_rect = replay.get_rect() # Get it's dimentions.
 replay_rect.center = replay.get_rect().center  # Set it's center.
+
+corner1 = [(windowSizeX // 2) - 770, (windowSizeY // 2) + 440]
+corner2 = [(windowSizeX // 2) - 770, (windowSizeY // 2) - 440] #
+corner3 = [(windowSizeX // 2) + 770, (windowSizeY // 2) - 440] #
+corner4 = [(windowSizeX // 2) + 770, (windowSizeY // 2) + 440]
+
 # replay_rect.center = 44, 44] # Put it somewhere
 #screen.blit(replay, replay_rect) # Draw it.
 
@@ -151,12 +157,12 @@ class TextBox(pygame.sprite.Sprite):
 		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 80)  #55
 		self.update()
 	def fontTeamVS(self):
-		self.font = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 135)  #55
+		self.font = pygame.font.Font('Resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 100)  #55
 		self.update()
-	def fontTitle1(self):
-		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 130)  #55
+	def fontMajorTitle(self):
+		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 90)  #55
 		self.update()
-	def fontTitle2(self):
+	def fontMinorTitle(self):
 		self.font = pygame.font.Font('Resources/Fonts/Roboto-Medium.ttf', 70)  #55
 		self.update()
 	def blue(self):
@@ -164,16 +170,16 @@ class TextBox(pygame.sprite.Sprite):
 		self.update()
 
 
-title1name = TextBox() # active text box 11
-title2name = TextBox() # active text box 12
-title1name.text = "Major Heading"
-title2name.text = "Minor Heading"
-title1name.fontTitle1()
-title2name.fontTitle2()
-title1name.green3()
-title2name.green3()
-title1name.update()
-title2name.update()
+majorTitleName = TextBox() # active text box 11
+minorTitleName = TextBox() # active text box 12
+majorTitleName.text = "Major Title"
+minorTitleName.text = "Minor Title"
+majorTitleName.fontMajorTitle()
+minorTitleName.fontMinorTitle()
+majorTitleName.green3()
+minorTitleName.green3()
+majorTitleName.update()
+minorTitleName.update()
 team1name = TextBox()
 team2name = TextBox()
 team1name.text = "Team1"
@@ -188,6 +194,7 @@ team2ScoreBox = TextBox()
 team2ScoreBox.text = str(team2Score)
 lowerThirdText = TextBox()
 lowerThirdText.text = ""
+
 
 
 try:
@@ -240,32 +247,31 @@ def draw_input_screen():
 	global countdown_seconds
 	global countdown_minutes
 	global showTimer
-	global title1name
-	# timer_running = False
+	# global majorTitleName
 	showTimer = False
 	draw_greenscreen()
 	team1name.green0()
 	team2name.green0()
-	title1name.green0()
-	title2name.green0()
+	majorTitleName.green0()
+	minorTitleName.green0()
 	if activeTextBox == 1:
 		team1name.green4()
 	if activeTextBox == 2:
 		team2name.green4()
 	if activeTextBox == 11:
-		title1name.green4()
+		majorTitleName.green4()
 	if activeTextBox == 12:
-		title2name.green4()
-	title1name.fontTitle2()
-	title2name.fontTitle2()
-	team1name.fontTitle2()
-	team2name.fontTitle2()
-	screen.blit(titlesNamesRequestText, [200, 200])
-	screen.blit(teamNamesRequestText, [200, 450])
-	screen.blit(title1name.image, [1000, 200])
-	screen.blit(title2name.image, [1000, 300])
-	screen.blit(team1name.image, [1000, 450])
-	screen.blit(team2name.image, [1000, 550])
+		minorTitleName.green4()
+	majorTitleName.fontMinorTitle()
+	minorTitleName.fontMinorTitle()
+	team1name.fontMinorTitle()
+	team2name.fontMinorTitle()
+	screen.blit(titlesNamesRequestText, [100, 200])
+	screen.blit(teamNamesRequestText, [100, 450])
+	screen.blit(majorTitleName.image, [800, 200])
+	screen.blit(minorTitleName.image, [800, 300])
+	screen.blit(team1name.image, [800, 450])
+	screen.blit(team2name.image, [800, 550])
 	countdown_ticks = (countdown_minutes * 60) + (countdown_seconds)
 	countdown_minutes = countdown_ticks//60
 	countdown_seconds = countdown_ticks % 60
@@ -278,14 +284,14 @@ def draw_input_screen():
 	else:
 		countdownMinutesText = str(countdown_minutes)
 	countdownMinutesText = "< " + countdownMinutesText
-	countdownSecondsText = countdownSecondsText + " >"
+	countdownSecondsText = countdownSecondsText + " >  minutes"
 	if activeTextBox == 5:
 		countdownText = countdownMinutesText + ":" + countdownSecondsText
 		countdownTextR = font.render(countdownText, False, green4,green2)  # Render it.
 	else:
 		countdownText = countdownMinutesText + ":" + countdownSecondsText
 		countdownTextR = font.render(countdownText, False, green2)  # Render it.
-	countdown_rect = [1000, 700]  # Put the center of the rect somewhere
+	countdown_rect = [800, 700]  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 	tabexit_rect.center = [windowSizeX / 2, 950] # Put it somewhere
 	screen.blit(tabexitR, tabexit_rect)
@@ -293,19 +299,19 @@ def draw_title_screen():
 	draw_greenscreen()
 	team1name.blue()
 	team2name.blue()
-	title1name.white()
-	title2name.white()
-	title1name.rect.center = [(windowSizeX // 2), 190]
-	title2name.rect.center = [(windowSizeX // 2), 325]
+	majorTitleName.white()
+	minorTitleName.white()
+	majorTitleName.rect.center = [(windowSizeX // 2), 180]
+	minorTitleName.rect.center = [(windowSizeX // 2), 315]
 	team1name.rect.center = [(windowSizeX // 2), 580]
 	team2name.rect.center = [(windowSizeX // 2),855]
-	title1name.fontTitle1()
-	title2name.fontTitle2()
+	majorTitleName.fontMajorTitle()
+	minorTitleName.fontMinorTitle()
 	team1name.fontTeamVS()
 	team2name.fontTeamVS()
 	screen.blit(titleVS_graphic, full_screen_rect)
-	screen.blit(title1name.image, title1name.rect)
-	screen.blit(title2name.image, title2name.rect)
+	screen.blit(majorTitleName.image, majorTitleName.rect)
+	screen.blit(minorTitleName.image, minorTitleName.rect)
 	screen.blit(team1name.image, team1name.rect)
 	screen.blit(team2name.image, team2name.rect)
 	draw_OFFAIR_filter()
@@ -336,55 +342,52 @@ def draw_score_screen():
 	global LT_lowering
 	global transition_trigger
 	global LT_counter
-	global lowerThirdCurrentPosition
+	global LT_MovementPosition
 	global activeTextBox
 	global LT_box_position_UP
-	if lowerThirdCurrentPosition < 991:
-		lowerThirdBoxThickness = 45 # small box
-	if lowerThirdCurrentPosition > 990:
-		lowerThirdBoxThickness = 150 # large box
+	if LT_MovementPosition < 991:
+		lowerThirdBoxThickness = 45 # small box 45
+	if LT_MovementPosition > 990:
+		lowerThirdBoxThickness = 100 # large box 100
 	draw_greenscreen()
 	draw_timer_preview()
 	team1name.green3()
 	team2name.green3()
 	team1ScoreBox.green3()
 	team2ScoreBox.green3()
-	pygame.draw.rect(screen, black, (0, lowerThirdCurrentPosition - 22, windowSizeX, lowerThirdBoxThickness))  #-22
-	lowerThirdText.text = team1name.text + "  " + team1ScoreBox.text + "                                                       " + team2name.text + "  " + team2ScoreBox.text
-	lowerThirdText.rect.center = [(windowSizeX // 2), lowerThirdCurrentPosition]
+	pygame.draw.rect(screen, black, (0, LT_MovementPosition - 23, windowSizeX, lowerThirdBoxThickness))  #-22 the size of LT box top
+	lowerThirdText.text = team1name.text + "  " + team1ScoreBox.text + "                                                                     " + team2name.text + "  " + team2ScoreBox.text
+	lowerThirdText.rect.center = [(windowSizeX // 2), LT_MovementPosition]
 	lowerThirdText.white()
 	lowerThirdText.fontLowerThird()
 	lowerThirdText.update()
-	if LT_lowering == True:
-		transition_trigger = False
-	if transition_trigger == True and on_air == True:
-		transition_trigger = False
-		LT_rasing = True
-		LT_lowering = False
-	if transition_trigger == True and on_air == False:
-		transition_trigger = False
-		LT_rasing = False
-		LT_lowering = True
-		activeTextBox = 0
+	if LT_lowering == True or LT_rasing == True:
+		transition_trigger = False # reset the trigger
+	if transition_trigger == True:
+		if on_air == True:
+			LT_rasing = True
+			LT_lowering = False
+		else: #  transition_trigger false:
+			LT_rasing = False
+			LT_lowering = True
+			activeTextBox = 0
 	#  1105 is offscreen, 1045 is onscreen
-	if LT_rasing == True and lowerThirdCurrentPosition > LT_box_position_UP:
+	if LT_rasing == True and LT_MovementPosition > LT_box_position_UP:
 		LT_counter = LT_counter - 1 # raise
 	else:
 		LT_rasing = False
-	if LT_lowering == True and lowerThirdCurrentPosition < 1105: # 1105 is below screen
+	if LT_lowering == True and LT_MovementPosition < 1105: # 1105 is below screen
 		LT_counter = LT_counter + 1 # lower
 	else:
 		LT_lowering = False
-	lowerThirdCurrentPosition = 1105 + (LT_counter * (1105-LT_box_position_UP)//10)
+	LT_MovementPosition = 1105 + (LT_counter * (1105 - LT_box_position_UP) // 10)
 	screen.blit(lowerThirdText.image, lowerThirdText.rect)
-	if on_air == False and LT_lowering == False and LT_rasing == False:
+	if on_air == False and LT_lowering == False and LT_rasing == False: # lower thirds off-air marker...
 		if LT_box_position_UP - 22 < 991:
-			lowerThirdBoxThickness = 45  # small box
+			lowerThirdBoxThickness = 45  # 45 small box
 		if LT_box_position_UP - 22 > 990:
-			lowerThirdBoxThickness = 150  # large box
-		pygame.draw.rect(screen, white, (0, LT_box_position_UP - 22, windowSizeX, lowerThirdBoxThickness))  #-22
-		draw_score_preview_screen()
-		draw_OFFAIR_filter()
+			lowerThirdBoxThickness = 100  # 100 large box
+		pygame.draw.rect(screen, green3, (0, LT_box_position_UP - 22, windowSizeX, lowerThirdBoxThickness))  #-22
 	draw_score_preview_screen()
 	draw_timer_panel()
 def draw_score_preview_screen():
@@ -397,6 +400,15 @@ def draw_score_preview_screen():
 	if activeTextBox == 3:
 		team1ScoreBox.green4()
 		team1name.green4()
+		team2ScoreBox.green2()
+		team2name.green2()
+	if activeTextBox == 0:
+		team1ScoreBox.green4()
+		team2ScoreBox.green4()
+		team1name.green4()
+		team2name.green4()
+		team1ScoreBox.green2()
+		team1name.green2()
 	if activeTextBox == 4:
 		team2ScoreBox.green4()
 		team2name.green4()
@@ -529,15 +541,25 @@ def update_clocks():
 		countdownMinutesText = str(countdown_minutes)
 	countdownText = countdownMinutesText + ":" + countdownSecondsText
 def draw_timer_panel():
-	if showTimer == True:
+
+	if showTimer == True and variation_timer < 5:
 		if timer_running == False:
-			countdownTextR = fontDigital_corners.render(countdownText, True, red, black)  # Render it.
+			countdownTextR = fontDigital_timer.render(countdownText, True, red, black)  # Render it.
 		else:
-			countdownTextR = fontDigital_corners.render(countdownText, True,white, black) # Render it.
-	else:
-		countdownTextR = fontDigital_corners.render(countdownText, True, green3,green3)  # Render it.
+			countdownTextR = fontDigital_timer.render(countdownText, True, white, black) # Render it.
+	if showTimer == False and variation_timer < 5:
+		countdownTextR = fontDigital_timer.render(countdownText, True, green4, green3)  # Render it.
+
+	if showTimer == True and variation_timer > 4:
+		if timer_running == False:
+			countdownTextR = fontDigital_timer.render(countdownText, True, red )  # Render it.
+		else:
+			countdownTextR = fontDigital_timer.render(countdownText, True, white) # Render it.
+	if showTimer == False and variation_timer > 4:
+		countdownTextR = fontDigital_timer.render(countdownText, True, black)  # Render it.
+
+
 	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
-	countdown_rect.center = corner1  # Put the center of the rect somewhere
 	if variation_timer == 1:
 		countdown_rect.center = corner1  # Put the center of the rect somewhere
 	if variation_timer == 2:
@@ -546,7 +568,12 @@ def draw_timer_panel():
 		countdown_rect.center = corner3  # Put the center of the rect somewhere
 	if variation_timer == 4:
 		countdown_rect.center = corner4  # Put the center of the rect somewhere
+	if variation_timer == 5: # lower third position
+		countdown_rect.center = [(windowSizeX // 2), LT_MovementPosition+2]
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
+
+
+
 
 
 # ------------------------------------------------
@@ -610,16 +637,16 @@ while running:
 				if live_screen_ID == "Help2":
 					pygame.quit()
 					quit()
-			if event.key == pygame.K_TAB:
+			if event.key == pygame.K_TAB and on_air == False:
 				if live_screen_ID == "input":  # if inputscreen true then
+					live_screen_ID = "Scores"  # exit.
 					activeTextBox = 0
-					live_screen_ID = "Titles"  # exit.
 					on_air = False
 				else: # if inputscreen not active...
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
-			# General key downs ---------------------------------\
+			# General key downs --------------------------------------
 			if live_screen_ID != "input" : # Any screen except 'input'
 				if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
 					if activeTextBox > 0:
@@ -708,7 +735,7 @@ while running:
 							team2ScoreBox.update()
 						if live_screen_ID == "Scores" and showTimer == False:
 							variation_timer = variation_timer + 1
-							if variation_timer > 4:
+							if variation_timer > 5:
 								variation_timer = 1
 						if live_screen_ID == "Help2":
 							live_screen_ID = "Help1"
@@ -721,7 +748,7 @@ while running:
 						live_screen_ID = "Help1"
 					else:
 						live_screen_ID = "Scores"
-			# LIVE SCORE CHANGE------
+			# LIVE SCORE CHANGE BELOW------
 			if activeTextBox == 3 and on_air == False: # SCORE1 CHANGE
 				if event.key == pygame.K_UP or event.key == pygame.K_KP8:
 					team1Score = team1Score +1
@@ -740,32 +767,33 @@ while running:
 				team1ScoreBox.update()
 				team2ScoreBox.text = str(team2Score)
 				team2ScoreBox.update()
+			# -----------------------------
 			if activeTextBox == 11: # major title
 				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
 					activeTextBox = 12# minor title
 				if event.key == pygame.K_SPACE:
-					title1name.text += " "
-					title1name.update()
+					majorTitleName.text += " "
+					majorTitleName.update()
 				if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
 					shiftDown = True
 				if event.key == pygame.K_BACKSPACE:
-					title1name.text = title1name.text[:-1]
-				title1name.add_chr(pygame.key.name(event.key))
-				title1name.update()
+					majorTitleName.text = majorTitleName.text[:-1]
+				majorTitleName.add_chr(pygame.key.name(event.key))
+				majorTitleName.update()
 			elif activeTextBox == 12:  # minor title
 				if event.key == pygame.K_UP:
 					activeTextBox = 11
 				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
 					activeTextBox = 1 #
 				if event.key == pygame.K_SPACE:
-					title2name.text += " "
-					title2name.update()
+					minorTitleName.text += " "
+					minorTitleName.update()
 				if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
 					shiftDown = True
 				if event.key == pygame.K_BACKSPACE:
-					title2name.text = title2name.text[:-1]
-				title2name.add_chr(pygame.key.name(event.key))
-				title2name.update()
+					minorTitleName.text = minorTitleName.text[:-1]
+				minorTitleName.add_chr(pygame.key.name(event.key))
+				minorTitleName.update()
 			elif activeTextBox == 1: #team1 Name set
 				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
 					activeTextBox = 2
