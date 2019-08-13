@@ -27,9 +27,9 @@ r = Replay logo.
 
 c = Clock (show/hide).
 
-+ = Clock run.
+'+' = Clock run.
 
-- = Clock stop.
+'-' = Clock stop.
 
 v = Variation on the current theme.
 
