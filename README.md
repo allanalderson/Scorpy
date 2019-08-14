@@ -13,7 +13,7 @@ Keyboard operation:
 
 curser (up, down, left, right): Move/adjust scores.
 
-tab = enter the team-names and set timer/clock (tab again to exit)
+tab = Set the team-names and timer (tab again to exit)
 
 spacebar = On-air / Off-air toggle.
 
@@ -34,6 +34,8 @@ c = Clock (show/hide).
 v = Variation on the current theme.
 
 b = Bars (but no tone)
+
+w = watermark.png (show/hide)
 
 ? = help screen.
 
