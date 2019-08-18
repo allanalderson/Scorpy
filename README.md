@@ -41,10 +41,10 @@ w = watermark.png (show/hide)
 
 1~9 User images (e.g:  1.jpg @ 1920x1080).
 
+If the Raspberry Pi is configured to load an external USB drive,
 9 user images will be read from a FAT32 format USB drive during power-up.
 User Image filenames should be this format:  image1.jpg
 and be 1920 x 1080 pixels.
-
 
 Scorpy will also attempt to load 1 watermark image from the same drive.
 It's filename should be this format:  watermark.png
@@ -52,9 +52,6 @@ and should contain an alpha (transparency) channel.
 The watermark filesize should be about 250 x 100 pixels.
 
 
+The folder 'scorpy_resources' contains fonts and images that Scorpy needs.
 
-
-The folder 'scorpy_resources' contains fonts and images that Scorpy needs (put in the same directory as scorpy.py)
-
-NOTE: YOU NEED TO BE 'OFF-AIR' TO MAKE ANY CHANGES.
 
