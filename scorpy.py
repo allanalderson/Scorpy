@@ -16,6 +16,7 @@
 5.2 Bug Fix no score change during Score screen's first run. Code easier to read
 5.3 Add score swap Variation (v) during score screen.
 5.4 Reset scores to zero if titles screen displayed.
+5.5 Quick access to screens.
 
 
 '''
@@ -788,46 +789,63 @@ while running:
 				if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS or event.key == pygame.K_EQUALS:
 					pass
 					timer_running = True
-				if on_air == False:
-					if event.key == pygame.K_t:
-						live_screen_ID = "Titles"
-					if event.key == pygame.K_s:
-						previousKey = "s"
+
+				if event.key == pygame.K_t:
+					live_screen_ID = "Titles"
+					on_air = False
+				if event.key == pygame.K_s:
+					previousKey = "s"
+					live_screen_ID = "Scores"
+					activeTextBox = 0
+					on_air = False
+				if event.key == pygame.K_h:
+					on_air = False
+					live_screen_ID = "Halftime"
+				if event.key == pygame.K_f:
+					on_air = False
+					live_screen_ID = "Fulltime"
+				if event.key == pygame.K_0:
+					live_screen_ID = "0"
+					on_air = False
+				if event.key == pygame.K_1:
+					live_screen_ID = "1"
+					on_air = False
+				if event.key == pygame.K_2:
+					live_screen_ID = "2"
+					on_air = False
+				if event.key == pygame.K_3:
+					live_screen_ID = "3"
+					on_air = False
+				if event.key == pygame.K_4:
+					live_screen_ID = "4"
+					on_air = False
+				if event.key == pygame.K_5:
+					live_screen_ID = "5"
+					on_air = False
+				if event.key == pygame.K_6:
+					live_screen_ID = "6"
+					on_air = False
+				if event.key == pygame.K_7:
+					live_screen_ID = "7"
+					on_air = False
+				if event.key == pygame.K_8:
+					live_screen_ID = "8"
+					on_air = False
+				if event.key == pygame.K_9:
+					live_screen_ID = "9"
+					on_air = False
+				if event.key == pygame.K_r:
+					on_air = False
+					previousKey = "r"
+					live_screen_ID = "Replay"
+				if event.key == pygame.K_b:
+					on_air = False
+					if live_screen_ID == "Bars":
 						live_screen_ID = "Scores"
-						activeTextBox = 0
-					if event.key == pygame.K_h:
-						live_screen_ID = "Halftime"
-					if event.key == pygame.K_f:
-						live_screen_ID = "Fulltime"
-					if event.key == pygame.K_0:
-						live_screen_ID = "0"
-					if event.key == pygame.K_1:
-						live_screen_ID = "1"
-					if event.key == pygame.K_2:
-						live_screen_ID = "2"
-					if event.key == pygame.K_3:
-						live_screen_ID = "3"
-					if event.key == pygame.K_4:
-						live_screen_ID = "4"
-					if event.key == pygame.K_5:
-						live_screen_ID = "5"
-					if event.key == pygame.K_6:
-						live_screen_ID = "6"
-					if event.key == pygame.K_7:
-						live_screen_ID = "7"
-					if event.key == pygame.K_8:
-						live_screen_ID = "8"
-					if event.key == pygame.K_9:
-						live_screen_ID = "9"
-					if event.key == pygame.K_r:
-						previousKey = "r"
-						live_screen_ID = "Replay"
-					if event.key == pygame.K_b:
-						if live_screen_ID == "Bars":
-							live_screen_ID = "Scores"
-							on_air = False
-						elif on_air == False:
-							live_screen_ID = "Bars"
+						on_air = False
+					elif on_air == False:
+						live_screen_ID = "Bars"
+				if on_air == False:
 					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
 						if live_screen_ID == "Replay" and previousKey == "r":
 							variation_replay = variation_replay + 1
