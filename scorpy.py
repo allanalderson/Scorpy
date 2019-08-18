@@ -13,6 +13,9 @@
 4.9 Added LT Clock , some refactoring
 5.0 Changed 'Resources' folder to 'scorpy_resources'
 5.1 Added Watermark
+5.2 Bug Fix no score change during Score screen's first run. Code easier to read
+
+
 
 '''
 
@@ -111,8 +114,8 @@ corner3 = [(windowSizeX // 2) + 770, (windowSizeY // 2) - 440] #
 corner4 = [(windowSizeX // 2) + 770, (windowSizeY // 2) + 440]
 
 
-# replay_rect = replay.get_rect() # Get it's dimentions.
-# replay_rect.center = replay.get_rect().center  # Set it's center.
+replay_rect = replay.get_rect() # Get it's dimentions.
+replay_rect.center = replay.get_rect().center  # Set it's center.
 # replay_rect.center = corner3 # Put it somewhere
 # screen.blit(replay, replay_rect) # Draw it.
 
@@ -386,7 +389,7 @@ def draw_score_screen():
 		else: #  transition_trigger false:
 			LT_rasing = False
 			LT_lowering = True
-			activeTextBox = 0
+			# activeTextBox = 0 #xxxx
 	#  1105 is offscreen, 1045 is onscreen
 	if LT_rasing == True and LT_MovementPosition > LT_box_position_UP:
 		LT_counter = LT_counter - 1 # raise
@@ -642,7 +645,6 @@ while running:
 		activeTextBox = 0
 	if live_screen_ID == "Help2":
 		screen.blit(help2, full_screen_rect)
-		activeTextBox = 0
 		on_air = False
 	if live_screen_ID == "Replay":
 		draw_replay_screen()
@@ -661,7 +663,7 @@ while running:
 				if live_screen_ID == "Help2":
 					pygame.quit()
 					quit()
-			if event.key == pygame.K_TAB and on_air == False:
+			if event.key == pygame.K_TAB:
 				if live_screen_ID == "input":  # if inputscreen true then
 					live_screen_ID = "Scores"  # exit.
 					activeTextBox = 0
@@ -670,10 +672,87 @@ while running:
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
-			# General key downs --------------------------------------
-			if live_screen_ID != "input" : # Any screen except 'input'
+			if live_screen_ID == "input":
+				if activeTextBox == 11:  # major title
+					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+						activeTextBox = 12  # minor title
+					if event.key == pygame.K_SPACE:
+						majorTitleName.text += " "
+						majorTitleName.update()
+					if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
+						shiftDown = True
+					if event.key == pygame.K_BACKSPACE:
+						majorTitleName.text = majorTitleName.text[:-1]
+					majorTitleName.add_chr(pygame.key.name(event.key))
+					majorTitleName.update()
+				elif activeTextBox == 12:  # minor title
+					if event.key == pygame.K_UP:
+						activeTextBox = 11
+					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+						activeTextBox = 1  #
+					if event.key == pygame.K_SPACE:
+						minorTitleName.text += " "
+						minorTitleName.update()
+					if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
+						shiftDown = True
+					if event.key == pygame.K_BACKSPACE:
+						minorTitleName.text = minorTitleName.text[:-1]
+					minorTitleName.add_chr(pygame.key.name(event.key))
+					minorTitleName.update()
+				elif activeTextBox == 1:  #team1 Name set
+					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+						activeTextBox = 2
+					if event.key == pygame.K_UP:
+						activeTextBox = 12
+					if event.key == pygame.K_SPACE:
+						team1name.text += " "
+						team1name.update()
+					if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
+						shiftDown = True
+					if event.key == pygame.K_BACKSPACE:
+						team1name.text = team1name.text[:-1]
+					team1name.add_chr(pygame.key.name(event.key))
+					team1name.update()
+				elif activeTextBox == 2:  # move
+					if event.key == pygame.K_UP:
+						activeTextBox = 1
+					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+						timer_running = False
+						countdown_seconds = 0
+						countdown_minutes = 40
+						activeTextBox = 5
+						counting_down = True
+					if event.key == pygame.K_SPACE:
+						team2name.text += " "
+						team2name.update()
+					if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
+						shiftDown = True
+					if event.key == pygame.K_BACKSPACE:
+						team2name.text = team2name.text[:-1]
+					team2name.add_chr(pygame.key.name(event.key))
+					team2name.update()
+				elif activeTextBox == 5:  #timer set
+					if event.key == pygame.K_UP:
+						activeTextBox = 2
+					if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+						activeTextBox = 0
+						live_screen_ID = "Titles"  # exit.
+						on_air = False
+					if event.key == pygame.K_LEFT:
+						if countdown_minutes > 20:
+							countdown_minutes = countdown_minutes - 5
+						else:
+							if countdown_minutes > 0:
+								countdown_minutes = countdown_minutes - 1
+								if countdown_minutes < 1:
+									counting_down = False
+					if event.key == pygame.K_RIGHT:
+						if countdown_minutes > 24:
+							countdown_minutes = countdown_minutes + 5
+						else:
+							countdown_minutes = countdown_minutes + 1
+			else:  # ------ NOT INPUT SCREEN
 				if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
-					previousKey = "0"
 					if activeTextBox > 0:
 						activeTextBox = 0
 					on_air = not on_air
@@ -685,29 +764,19 @@ while running:
 				if event.key == pygame.K_w:
 					previousKey = "w"
 					showWatermark = not showWatermark
-
+				if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
+					on_air = False
+					previousKey = "?"
+					if live_screen_ID != "Help1":
+						live_screen_ID = "Help1"
+					else:
+						live_screen_ID = "Scores"
 				if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
 					pass
 					timer_running = False
 				if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS or event.key == pygame.K_EQUALS:
 					pass
 					timer_running = True
-				if live_screen_ID == "Scores" or live_screen_ID == "Halftime" or live_screen_ID == "Fulltime":
-
-
-					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
-						activeTextBox = 3
-					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
-						activeTextBox = 4
-					if live_screen_ID == "Scores":
-						if event.key == pygame.K_c or event.key == pygame.K_KP_MULTIPLY:
-							previousKey = "c"
-							showTimer = not showTimer
-						if activeTextBox == 0:  # Lower third position adjustments...
-							if event.key == pygame.K_DOWN and LT_box_position_UP < 1045:
-								LT_box_position_UP = LT_box_position_UP + 2
-							if event.key == pygame.K_UP and LT_box_position_UP > 700:
-								LT_box_position_UP = LT_box_position_UP - 2
 				if on_air == False:
 					if event.key == pygame.K_t:
 						live_screen_ID = "Titles"
@@ -747,7 +816,7 @@ while running:
 							on_air = False
 						elif on_air == False:
 							live_screen_ID = "Bars"
-					if event.key == pygame.K_v:  # VARIATIONS
+					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
 						if live_screen_ID == "Replay" and previousKey == "r":
 							variation_replay = variation_replay + 1
 							if variation_replay > 4:
@@ -756,7 +825,6 @@ while running:
 							variation_watermark = variation_watermark + 1
 							if variation_watermark > 4:
 								variation_watermark = 1
-
 						if live_screen_ID == "Titles" or live_screen_ID == "Halftime" or live_screen_ID == "Fulltime":
 							# print("Variation to Score")
 							temp1score = team1Score
@@ -777,112 +845,42 @@ while running:
 						if live_screen_ID == "Help2":
 							live_screen_ID = "Help1"
 						elif live_screen_ID == "Help1":
-							print("Variation to Help1")
 							live_screen_ID = "Help2"
-				if (event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH):
-					on_air = False
-					if live_screen_ID != "Help1":
-						live_screen_ID = "Help1"
-					else:
-						live_screen_ID = "Scores"
-			# LIVE SCORE CHANGE BELOW------
-			if activeTextBox == 3 and on_air == False: # SCORE1 CHANGE
-				if event.key == pygame.K_UP or event.key == pygame.K_KP8:
-					team1Score = team1Score +1
-				if event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
-					team1Score = team1Score -1
-				team1ScoreBox.text = str(team1Score)
-				team1ScoreBox.update()
-				team2ScoreBox.text = str(team2Score)
-				team2ScoreBox.update()
-			if activeTextBox == 4 and on_air == False: # SCORE2 CHANGE
-				if event.key == pygame.K_UP or event.key == pygame.K_KP8:
-					team2Score = team2Score +1
-				if event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
-					team2Score = team2Score -1
-				team1ScoreBox.text = str(team1Score)
-				team1ScoreBox.update()
-				team2ScoreBox.text = str(team2Score)
-				team2ScoreBox.update()
-			# -----------------------------
-			if activeTextBox == 11: # major title
-				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-					activeTextBox = 12# minor title
-				if event.key == pygame.K_SPACE:
-					majorTitleName.text += " "
-					majorTitleName.update()
-				if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
-					shiftDown = True
-				if event.key == pygame.K_BACKSPACE:
-					majorTitleName.text = majorTitleName.text[:-1]
-				majorTitleName.add_chr(pygame.key.name(event.key))
-				majorTitleName.update()
-			elif activeTextBox == 12:  # minor title
-				if event.key == pygame.K_UP:
-					activeTextBox = 11
-				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-					activeTextBox = 1 #
-				if event.key == pygame.K_SPACE:
-					minorTitleName.text += " "
-					minorTitleName.update()
-				if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
-					shiftDown = True
-				if event.key == pygame.K_BACKSPACE:
-					minorTitleName.text = minorTitleName.text[:-1]
-				minorTitleName.add_chr(pygame.key.name(event.key))
-				minorTitleName.update()
-			elif activeTextBox == 1: #team1 Name set
-				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-					activeTextBox = 2
-				if event.key == pygame.K_UP :
-					activeTextBox = 12
-				if event.key == pygame.K_SPACE:
-					team1name.text += " "
-					team1name.update()
-				if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
-					shiftDown = True
-				if event.key == pygame.K_BACKSPACE:
-					team1name.text = team1name.text[:-1]
-				team1name.add_chr(pygame.key.name(event.key))
-				team1name.update()
-			elif activeTextBox == 2: # move
-				if event.key == pygame.K_UP:
-					activeTextBox = 1
-				if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-					timer_running = False
-					countdown_seconds = 0
-					countdown_minutes = 40
-					activeTextBox = 5
-					counting_down = True
-				if event.key == pygame.K_SPACE:
-					team2name.text += " "
-					team2name.update()
-				if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
-					shiftDown = True
-				if event.key == pygame.K_BACKSPACE:
-					team2name.text = team2name.text[:-1]
-				team2name.add_chr(pygame.key.name(event.key))
-				team2name.update()
-			elif activeTextBox == 5: #timer set
-				if event.key == pygame.K_UP:
-					activeTextBox = 2
-				if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-					activeTextBox = 0
-					live_screen_ID = "Titles"  # exit.
-					on_air = False
-				if event.key == pygame.K_LEFT:
-					if countdown_minutes > 20:
-						countdown_minutes = countdown_minutes - 5
-					else:
-						if countdown_minutes > 0:
-							countdown_minutes = countdown_minutes - 1
-							if countdown_minutes < 1:
-								counting_down = False
-				if event.key == pygame.K_RIGHT:
-					if countdown_minutes > 24:
-						countdown_minutes = countdown_minutes + 5
-					else:
-						countdown_minutes = countdown_minutes + 1
+					if event.key == pygame.K_c or event.key == pygame.K_KP_MULTIPLY:
+						if live_screen_ID == "Scores":
+							previousKey = "c"
+							showTimer = not showTimer
+					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
+						activeTextBox = 3
+					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
+						activeTextBox = 4
+					if activeTextBox == 3:  # SCORE1 CHANGE
+						if event.key == pygame.K_UP or event.key == pygame.K_KP8:
+							team1Score = team1Score + 1
+						if event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
+							team1Score = team1Score - 1
+						team1ScoreBox.text = str(team1Score)
+						team1ScoreBox.update()
+						team2ScoreBox.text = str(team2Score)
+						team2ScoreBox.update()
+					if activeTextBox == 4:  # SCORE2 CHANGE
+						if event.key == pygame.K_UP or event.key == pygame.K_KP8:
+							team2Score = team2Score + 1
+						if event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
+							team2Score = team2Score - 1
+						team1ScoreBox.text = str(team1Score)
+						team1ScoreBox.update()
+						team2ScoreBox.text = str(team2Score)
+						team2ScoreBox.update()
+					if activeTextBox == 0:  # Lower third position adjustments...
+						if event.key == pygame.K_DOWN and LT_box_position_UP < 1045:
+							LT_box_position_UP = LT_box_position_UP + 2
+						if event.key == pygame.K_UP and LT_box_position_UP > 700:
+							LT_box_position_UP = LT_box_position_UP - 2
+
+
+
+
 
 	draw_watermark()
 	pygame.display.update()
