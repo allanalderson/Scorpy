@@ -17,6 +17,7 @@
 5.3 Add score swap Variation (v) during score screen.
 5.4 Reset scores to zero if titles screen displayed.
 5.5 Quick access to screens.
+5.6 Tidy LT bar. Repair LT double trigger
 
 
 '''
@@ -264,7 +265,6 @@ def draw_input_screen():
 	global countdown_seconds
 	global countdown_minutes
 	global showTimer
-	# global majorTitleName
 	showTimer = False
 	draw_greenscreen()
 	team1name.green0()
@@ -372,14 +372,13 @@ def draw_score_screen():
 	team2name.green3()
 	team1ScoreBox.green3()
 	team2ScoreBox.green3()
-	pygame.draw.rect(screen, black, (0, LT_MovementPosition - 23, windowSizeX, lowerThirdBoxThickness))  #-22 the size of LT box top
+	pygame.draw.rect(screen, black, (0, LT_MovementPosition - 22, windowSizeX, lowerThirdBoxThickness))  #-22 the size of LT box top
 	lowerThirdText.text = team1name.text + "  " + team1ScoreBox.text + "                                                                     " + team2name.text + "  " + team2ScoreBox.text
 	lowerThirdText.rect.center = [(windowSizeX // 2), LT_MovementPosition]
 	lowerThirdText.white()
 	lowerThirdText.fontLowerThird()
 	lowerThirdText.update()
-	if LT_lowering == True or LT_rasing == True:
-		transition_trigger = False # reset the trigger
+
 	if transition_trigger == True:
 		if on_air == True:
 			LT_rasing = True
@@ -405,6 +404,8 @@ def draw_score_screen():
 		if LT_box_position_UP - 22 > 990:
 			lowerThirdBoxThickness = 100  # 100 large box
 		pygame.draw.rect(screen, green3, (0, LT_box_position_UP - 22, windowSizeX, lowerThirdBoxThickness))  #-22
+	if LT_lowering == False or LT_rasing == False:
+		transition_trigger = False # reset the trigger
 	draw_score_preview_screen()
 	draw_timer_panel()
 def draw_score_preview_screen():
