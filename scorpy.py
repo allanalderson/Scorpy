@@ -14,7 +14,8 @@
 5.0 Changed 'Resources' folder to 'scorpy_resources'
 5.1 Added Watermark
 5.2 Bug Fix no score change during Score screen's first run. Code easier to read
-
+5.3 Add score swap Variation (v) during score screen.
+5.4 Reset scores to zero if titles screen displayed.
 
 
 '''
@@ -106,19 +107,14 @@ help2 = pygame.image.load('scorpy_resources/Graphics/help2.png').convert()
 liveshot_graphic = pygame.image.load('scorpy_resources/Graphics/liveshot.png').convert()
 titleVS_graphic = pygame.image.load('scorpy_resources/Graphics/VS_graphic.png').convert_alpha()
 replay = pygame.image.load('scorpy_resources/Graphics/replay.png').convert_alpha()
-
-
-corner1 = [(windowSizeX // 2) - 770, (windowSizeY // 2) + 440]
-corner2 = [(windowSizeX // 2) - 770, (windowSizeY // 2) - 440] #
-corner3 = [(windowSizeX // 2) + 770, (windowSizeY // 2) - 440] #
-corner4 = [(windowSizeX // 2) + 770, (windowSizeY // 2) + 440]
-
-
+corner1 = [(windowSizeX // 2) - 780, (windowSizeY // 2) + 450]
+corner2 = [(windowSizeX // 2) - 780, (windowSizeY // 2) - 450]
+corner3 = [(windowSizeX // 2) + 780, (windowSizeY // 2) - 450]
+corner4 = [(windowSizeX // 2) + 780, (windowSizeY // 2) + 450]
 replay_rect = replay.get_rect() # Get it's dimentions.
 replay_rect.center = replay.get_rect().center  # Set it's center.
 # replay_rect.center = corner3 # Put it somewhere
-# screen.blit(replay, replay_rect) # Draw it.
-
+# screen.blit(replay, replay_rect) # Draw
 class TextBox(pygame.sprite.Sprite):
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
@@ -177,7 +173,6 @@ class TextBox(pygame.sprite.Sprite):
 		self.image = self.font.render(self.text, True, blue)
 		self.update()
 
-
 majorTitleName = TextBox() # active text box 11
 minorTitleName = TextBox() # active text box 12
 majorTitleName.text = "Major Title"
@@ -203,18 +198,18 @@ team2ScoreBox.text = str(team2Score)
 lowerThirdText = TextBox()
 lowerThirdText.text = ""
 
+
 watermark = pygame.image.load('scorpy_resources/Graphics/watermark.png').convert_alpha()
 try:
 	watermark = pygame.image.load('../../mnt/volume/watermark.jpg').convert_alpha()
 except:
- 	pass
+	pass
 try:
 	watermark = pygame.image.load('../../mnt/volume/watermark.png').convert_alpha()
 except:
- 	pass
-watermark_rect = watermark.get_rect() # Get it's dimentions.
+	pass
+watermark_rect = watermark.get_rect()  # Get it's dimentions.
 watermark_rect.center = watermark.get_rect().center  # Set it's center.
-
 
 try:
 	userImage1 = pygame.image.load('../../mnt/volume/image1.jpg')
@@ -252,6 +247,8 @@ try:
 	userImage9 = pygame.image.load('../../mnt/volume/9.jpg')
 except:
 	userImage9 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+
+
 
 
 
@@ -493,8 +490,19 @@ def draw_big_score_screen():
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
 def draw_OFFAIR_filter():
+	global team1Score
+	global team2Score
 	if on_air == False:
 		screen.blit(green_filter, full_screen_rect)
+	else:
+		#  Reset scores to zero if titles displayed.
+		if previousKey =="space" and live_screen_ID == "Titles":
+			team1Score = 0
+			team2Score = 0
+			team1ScoreBox.text = str(team1Score)
+			team1ScoreBox.update()
+			team2ScoreBox.text = str(team2Score)
+			team2ScoreBox.update()
 def draw_USER1_screen():
 	draw_greenscreen()
 	screen.blit(userImage1, full_screen_rect) # Draw it.
@@ -604,6 +612,8 @@ def draw_watermark():
 
 
 # ------------------------------------------------
+
+
 pygame.time.set_timer(USEREVENT + 0, 1000)
 while running:
 	if live_screen_ID == "Titles":
@@ -753,6 +763,7 @@ while running:
 							countdown_minutes = countdown_minutes + 1
 			else:  # ------ NOT INPUT SCREEN
 				if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
+					previousKey = "space"
 					if activeTextBox > 0:
 						activeTextBox = 0
 					on_air = not on_air
@@ -781,6 +792,7 @@ while running:
 					if event.key == pygame.K_t:
 						live_screen_ID = "Titles"
 					if event.key == pygame.K_s:
+						previousKey = "s"
 						live_screen_ID = "Scores"
 						activeTextBox = 0
 					if event.key == pygame.K_h:
@@ -825,12 +837,10 @@ while running:
 							variation_watermark = variation_watermark + 1
 							if variation_watermark > 4:
 								variation_watermark = 1
-						if live_screen_ID == "Titles" or live_screen_ID == "Halftime" or live_screen_ID == "Fulltime":
-							# print("Variation to Score")
+						if live_screen_ID == "Fulltime" or live_screen_ID == "Halftime" or (previousKey == "s" and live_screen_ID == "Scores"):
 							temp1score = team1Score
 							team1Score = team2Score
 							team2Score = temp1score
-
 							temp1name = team1name
 							team1name = team2name
 							team2name = temp1name
