@@ -19,7 +19,7 @@
 5.5 Quick access to screens.
 5.6 Tidy LT bar. Repair LT double trigger
 5.7 Clock callable on-air. Corner position tweaks.
-
+5.8 Refactoring, Quick access score bug fixed.
 
 '''
 
@@ -62,7 +62,7 @@ red = (250, 80, 80)
 greenScreen = (0, 150, 0)
 green2 = (0, 175, 0)
 green3 = (10, 195, 10)
-green4 = (15, 240, 15) # bright green for timer preview
+green4 = (15, 230, 15) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
 clock = pygame.time.Clock()
@@ -72,7 +72,8 @@ LT_lowering = False
 transition_trigger = False
 LT_counter = 0
 LT_box_position_UP = 1045
-LT_MovementPosition = 1105 #  1105 is offscreen, (1045 is onscreen)
+LT_box_position_DOWN = 1105
+LT_box_position = LT_box_position_DOWN #  1105 is offscreen, (1045 is onscreen)
 shiftDown = False
 showTimer = False
 running = True
@@ -360,12 +361,15 @@ def draw_score_screen():
 	global LT_lowering
 	global transition_trigger
 	global LT_counter
-	global LT_MovementPosition
+	global LT_box_position
 	global activeTextBox
 	global LT_box_position_UP
-	if LT_MovementPosition < 991:
+
+
+
+	if LT_box_position < 991:
 		lowerThirdBoxThickness = 45 # small box 45
-	if LT_MovementPosition > 990:
+	if LT_box_position > 990:
 		lowerThirdBoxThickness = 100 # large box 100
 	draw_greenscreen()
 	draw_timer_preview()
@@ -373,9 +377,9 @@ def draw_score_screen():
 	team2name.green3()
 	team1ScoreBox.green3()
 	team2ScoreBox.green3()
-	pygame.draw.rect(screen, black, (0, LT_MovementPosition - 22, windowSizeX, lowerThirdBoxThickness))  #-22 the size of LT box top
+	pygame.draw.rect(screen, black, (0, LT_box_position - 22, windowSizeX, lowerThirdBoxThickness))  #-22 the size of LT box top
 	lowerThirdText.text = team1name.text + "  " + team1ScoreBox.text + "                                                                     " + team2name.text + "  " + team2ScoreBox.text
-	lowerThirdText.rect.center = [(windowSizeX // 2), LT_MovementPosition]
+	lowerThirdText.rect.center = [(windowSizeX // 2), LT_box_position]
 	lowerThirdText.white()
 	lowerThirdText.fontLowerThird()
 	lowerThirdText.update()
@@ -388,16 +392,15 @@ def draw_score_screen():
 			LT_rasing = False
 			LT_lowering = True
 			# activeTextBox = 0 #xxxx
-	#  1105 is offscreen, 1045 is onscreen
-	if LT_rasing == True and LT_MovementPosition > LT_box_position_UP:
+	if LT_rasing == True and LT_box_position > LT_box_position_UP:
 		LT_counter = LT_counter - 1 # raise
 	else:
 		LT_rasing = False
-	if LT_lowering == True and LT_MovementPosition < 1105: # 1105 is below screen
+	if LT_lowering == True and LT_box_position < LT_box_position_DOWN: # 1105 is below screen
 		LT_counter = LT_counter + 1 # lower
 	else:
 		LT_lowering = False
-	LT_MovementPosition = 1105 + (LT_counter * (1105 - LT_box_position_UP) // 10)
+	LT_box_position = LT_box_position_DOWN + (LT_counter * (LT_box_position_DOWN - LT_box_position_UP) // 10)
 	screen.blit(lowerThirdText.image, lowerThirdText.rect)
 	if on_air == False and LT_lowering == False and LT_rasing == False: # lower thirds off-air marker...
 		if LT_box_position_UP - 22 < 991:
@@ -409,6 +412,8 @@ def draw_score_screen():
 		transition_trigger = False # reset the trigger
 	draw_score_preview_screen()
 	draw_timer_panel()
+
+	print(LT_box_position)
 def draw_score_preview_screen():
 	team1name.fontTeamNameUnderScore()
 	team2name.fontTeamNameUnderScore()
@@ -599,7 +604,7 @@ def draw_timer_panel():
 	if variation_timer == 4:
 		countdown_rect.center = corner4  # Put the center of the rect somewhere
 	if variation_timer == 5: # lower third position
-		countdown_rect.center = [(windowSizeX // 2), LT_MovementPosition+2]
+		countdown_rect.center = [(windowSizeX // 2), LT_box_position + 2]
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 def draw_watermark():
 	if showWatermark == True:
@@ -778,80 +783,80 @@ while running:
 				if event.key == pygame.K_w:
 					previousKey = "w"
 					showWatermark = not showWatermark
-				if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
-					on_air = False
-					previousKey = "?"
-					if live_screen_ID != "Help1":
-						live_screen_ID = "Help1"
-					else:
-						live_screen_ID = "Scores"
 				if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
 					pass
 					timer_running = False
 				if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS or event.key == pygame.K_EQUALS:
 					pass
 					timer_running = True
-
-				if event.key == pygame.K_t:
-					live_screen_ID = "Titles"
-					on_air = False
-				if event.key == pygame.K_s:
-					previousKey = "s"
-					live_screen_ID = "Scores"
-					activeTextBox = 0
-					on_air = False
-				if event.key == pygame.K_h:
-					on_air = False
-					live_screen_ID = "Halftime"
-				if event.key == pygame.K_f:
-					on_air = False
-					live_screen_ID = "Fulltime"
-				if event.key == pygame.K_0:
-					live_screen_ID = "0"
-					on_air = False
-				if event.key == pygame.K_1:
-					live_screen_ID = "1"
-					on_air = False
-				if event.key == pygame.K_2:
-					live_screen_ID = "2"
-					on_air = False
-				if event.key == pygame.K_3:
-					live_screen_ID = "3"
-					on_air = False
-				if event.key == pygame.K_4:
-					live_screen_ID = "4"
-					on_air = False
-				if event.key == pygame.K_5:
-					live_screen_ID = "5"
-					on_air = False
-				if event.key == pygame.K_6:
-					live_screen_ID = "6"
-					on_air = False
-				if event.key == pygame.K_7:
-					live_screen_ID = "7"
-					on_air = False
-				if event.key == pygame.K_8:
-					live_screen_ID = "8"
-					on_air = False
-				if event.key == pygame.K_9:
-					live_screen_ID = "9"
-					on_air = False
-				if event.key == pygame.K_r:
-					on_air = False
-					previousKey = "r"
-					live_screen_ID = "Replay"
-					showTimer = False
-				if event.key == pygame.K_b:
-					on_air = False
-					if live_screen_ID == "Bars":
-						live_screen_ID = "Scores"
-						on_air = False
-					elif on_air == False:
-						live_screen_ID = "Bars"
 				if event.key == pygame.K_c or event.key == pygame.K_KP_MULTIPLY:
 					if live_screen_ID == "Scores":
 						previousKey = "c"
 						showTimer = not showTimer
+				if LT_box_position == LT_box_position_DOWN:
+					if event.key == pygame.K_t:
+						live_screen_ID = "Titles"
+						on_air = False
+					if event.key == pygame.K_s:
+						previousKey = "s"
+						live_screen_ID = "Scores"
+						activeTextBox = 0
+						on_air = False
+					if event.key == pygame.K_h:
+						on_air = False
+						live_screen_ID = "Halftime"
+					if event.key == pygame.K_f:
+						on_air = False
+						live_screen_ID = "Fulltime"
+					if event.key == pygame.K_0:
+						live_screen_ID = "0"
+						on_air = False
+					if event.key == pygame.K_1:
+						live_screen_ID = "1"
+						on_air = False
+					if event.key == pygame.K_2:
+						live_screen_ID = "2"
+						on_air = False
+					if event.key == pygame.K_3:
+						live_screen_ID = "3"
+						on_air = False
+					if event.key == pygame.K_4:
+						live_screen_ID = "4"
+						on_air = False
+					if event.key == pygame.K_5:
+						live_screen_ID = "5"
+						on_air = False
+					if event.key == pygame.K_6:
+						live_screen_ID = "6"
+						on_air = False
+					if event.key == pygame.K_7:
+						live_screen_ID = "7"
+						on_air = False
+					if event.key == pygame.K_8:
+						live_screen_ID = "8"
+						on_air = False
+					if event.key == pygame.K_9:
+						live_screen_ID = "9"
+						on_air = False
+					if event.key == pygame.K_r:
+						on_air = False
+						previousKey = "r"
+						live_screen_ID = "Replay"
+						showTimer = False
+					if event.key == pygame.K_b:
+						on_air = False
+						if live_screen_ID == "Bars":
+							live_screen_ID = "Scores"
+							on_air = False
+						elif on_air == False:
+							live_screen_ID = "Bars"
+					if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
+						on_air = False
+						previousKey = "?"
+						if live_screen_ID != "Help1":
+							live_screen_ID = "Help1"
+						else:
+							live_screen_ID = "Scores"
 				if on_air == False:
 					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
 						if live_screen_ID == "Replay" and previousKey == "r":
