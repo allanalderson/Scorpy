@@ -18,6 +18,7 @@
 5.4 Reset scores to zero if titles screen displayed.
 5.5 Quick access to screens.
 5.6 Tidy LT bar. Repair LT double trigger
+5.7 Clock callable on-air. Corner position tweaks.
 
 
 '''
@@ -109,10 +110,10 @@ help2 = pygame.image.load('scorpy_resources/Graphics/help2.png').convert()
 liveshot_graphic = pygame.image.load('scorpy_resources/Graphics/liveshot.png').convert()
 titleVS_graphic = pygame.image.load('scorpy_resources/Graphics/VS_graphic.png').convert_alpha()
 replay = pygame.image.load('scorpy_resources/Graphics/replay.png').convert_alpha()
-corner1 = [(windowSizeX // 2) - 780, (windowSizeY // 2) + 450]
-corner2 = [(windowSizeX // 2) - 780, (windowSizeY // 2) - 450]
-corner3 = [(windowSizeX // 2) + 780, (windowSizeY // 2) - 450]
-corner4 = [(windowSizeX // 2) + 780, (windowSizeY // 2) + 450]
+corner1 = [(windowSizeX // 2) - 800, (windowSizeY // 2) + 450] # bottom, left
+corner2 = [(windowSizeX // 2) - 800, (windowSizeY // 2) - 480] # top, left
+corner3 = [(windowSizeX // 2) + 800, (windowSizeY // 2) - 480] # top, right
+corner4 = [(windowSizeX // 2) + 800, (windowSizeY // 2) + 450] # bottom, right
 replay_rect = replay.get_rect() # Get it's dimentions.
 replay_rect.center = replay.get_rect().center  # Set it's center.
 # replay_rect.center = corner3 # Put it somewhere
@@ -839,6 +840,7 @@ while running:
 					on_air = False
 					previousKey = "r"
 					live_screen_ID = "Replay"
+					showTimer = False
 				if event.key == pygame.K_b:
 					on_air = False
 					if live_screen_ID == "Bars":
@@ -846,6 +848,10 @@ while running:
 						on_air = False
 					elif on_air == False:
 						live_screen_ID = "Bars"
+				if event.key == pygame.K_c or event.key == pygame.K_KP_MULTIPLY:
+					if live_screen_ID == "Scores":
+						previousKey = "c"
+						showTimer = not showTimer
 				if on_air == False:
 					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
 						if live_screen_ID == "Replay" and previousKey == "r":
@@ -875,10 +881,6 @@ while running:
 							live_screen_ID = "Help1"
 						elif live_screen_ID == "Help1":
 							live_screen_ID = "Help2"
-					if event.key == pygame.K_c or event.key == pygame.K_KP_MULTIPLY:
-						if live_screen_ID == "Scores":
-							previousKey = "c"
-							showTimer = not showTimer
 					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
 						activeTextBox = 3
 					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
