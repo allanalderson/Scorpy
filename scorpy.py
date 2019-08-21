@@ -20,6 +20,7 @@
 5.6 Tidy LT bar. Repair LT double trigger
 5.7 Clock callable on-air. Corner position tweaks.
 5.8 Refactoring, Quick access score bug fixed.
+5.9 Corner and graphics tweaks, removed diagnostic printouts. Drop-shaddow on big scores
 
 '''
 
@@ -40,7 +41,7 @@ liveshot = False
 screen = pygame.display.set_mode([windowSizeX, windowSizeY])
 screen = pygame.display.set_mode([windowSizeX, windowSizeY], pygame.FULLSCREEN)
 pygame.mouse.set_visible(False)
-dropShaddowDistance = 5
+dropShaddowDistance = 4
 bigScorePositionRight = 1443
 bigScorePositionLeft = 480
 countdown_seconds = 0
@@ -48,7 +49,7 @@ countdown_minutes = 40
 timer_running = False
 variation_timer = 5
 variation_replay = 1
-variation_watermark = 1
+variation_watermark = 3
 countdown_ticks = (countdown_minutes*60)+(countdown_seconds)
 countdownMinutesText = str(countdown_minutes)
 previousKey = "0"
@@ -111,10 +112,10 @@ help2 = pygame.image.load('scorpy_resources/Graphics/help2.png').convert()
 liveshot_graphic = pygame.image.load('scorpy_resources/Graphics/liveshot.png').convert()
 titleVS_graphic = pygame.image.load('scorpy_resources/Graphics/VS_graphic.png').convert_alpha()
 replay = pygame.image.load('scorpy_resources/Graphics/replay.png').convert_alpha()
-corner1 = [(windowSizeX // 2) - 800, (windowSizeY // 2) + 450] # bottom, left
-corner2 = [(windowSizeX // 2) - 800, (windowSizeY // 2) - 480] # top, left
-corner3 = [(windowSizeX // 2) + 800, (windowSizeY // 2) - 480] # top, right
-corner4 = [(windowSizeX // 2) + 800, (windowSizeY // 2) + 450] # bottom, right
+corner1 = [(windowSizeX // 2) - 800, (windowSizeY // 2) + 440] # bottom, left
+corner2 = [(windowSizeX // 2) - 800, (windowSizeY // 2) - 470] # top, left
+corner3 = [(windowSizeX // 2) + 800, (windowSizeY // 2) - 470] # top, right
+corner4 = [(windowSizeX // 2) + 800, (windowSizeY // 2) + 440] # bottom, right
 replay_rect = replay.get_rect() # Get it's dimentions.
 replay_rect.center = replay.get_rect().center  # Set it's center.
 # replay_rect.center = corner3 # Put it somewhere
@@ -151,10 +152,10 @@ class TextBox(pygame.sprite.Sprite):
 	def black(self):
 		self.image = self.font.render(self.text, True, black)
 	def fontBigScore(self):
-		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Light.ttf', 300)
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Light.ttf', 270)
 		self.image = self.font.render(self.text, True, white)
 		self.update()
-	def fontMassiveScore(self):
+	def fontBigPreviewScore(self):
 		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 500)
 		self.image = self.font.render(self.text, True, green3)
 		self.update()
@@ -162,7 +163,7 @@ class TextBox(pygame.sprite.Sprite):
 		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 40)
 		self.update()
 	def fontTeamNameUnderScore(self):
-		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 80)  #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 55)  #55
 		self.update()
 	def fontTeamVS(self):
 		self.font = pygame.font.Font('scorpy_resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 100)  #55
@@ -412,15 +413,13 @@ def draw_score_screen():
 		transition_trigger = False # reset the trigger
 	draw_score_preview_screen()
 	draw_timer_panel()
-
-	print(LT_box_position)
 def draw_score_preview_screen():
 	team1name.fontTeamNameUnderScore()
 	team2name.fontTeamNameUnderScore()
 	team1name.green3()
 	team2name.green3()
-	team1ScoreBox.fontMassiveScore()
-	team2ScoreBox.fontMassiveScore()
+	team1ScoreBox.fontBigPreviewScore()
+	team2ScoreBox.fontBigPreviewScore()
 	if activeTextBox == 3:
 		team1ScoreBox.green4()
 		team1name.green4()
@@ -466,35 +465,54 @@ def draw_timer_preview():
 	countdown_rect.center = [windowSizeX // 2, 170]  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 def draw_big_score_screen():
+	teamNameYoffset = 290 # 260
+	teamScoreYoffset = 120 # 60
 	team1name.fontTeamNameUnderScore()
 	team2name.fontTeamNameUnderScore()
 	team1name.black()
 	team2name.black()
-	team1name.rect.center = [bigScorePositionLeft+dropShaddowDistance-2, (windowSizeY // 2) + 260+ dropShaddowDistance-2]
-	team2name.rect.center = [bigScorePositionRight+ dropShaddowDistance-2, ((windowSizeY // 2) + 260+ dropShaddowDistance-2)]
+	team1name.rect.center = [bigScorePositionLeft + dropShaddowDistance, (windowSizeY // 2) + teamNameYoffset + dropShaddowDistance]
+	team2name.rect.center = [bigScorePositionRight + dropShaddowDistance, ((windowSizeY // 2) + teamNameYoffset + dropShaddowDistance)]
+	screen.blit(team1name.image, team1name.rect)
+	screen.blit(team2name.image, team2name.rect)
+	team1name.white()
+	team2name.white()
+	team1name.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + teamNameYoffset]
+	team2name.rect.center = [bigScorePositionRight, ((windowSizeY // 2) + teamNameYoffset)]
 	screen.blit(team1name.image, team1name.rect)
 	screen.blit(team2name.image, team2name.rect)
 
-	team1name.white()
-	team2name.white()
-	team1name.rect.center = [bigScorePositionLeft, (windowSizeY // 2) + 260]
-	team2name.rect.center = [bigScorePositionRight, ((windowSizeY // 2) + 260)]
-	screen.blit(team1name.image, team1name.rect)
-	screen.blit(team2name.image, team2name.rect)
-	#----- Drop Shaddow first
+	#----- Drop Shaddow START
 	team1ScoreBox.fontBigScore()
 	team2ScoreBox.fontBigScore()
 	team1ScoreBox.black()
 	team2ScoreBox.black()
-	team1ScoreBox.rect.center = [bigScorePositionLeft+dropShaddowDistance, (windowSizeY // 2) +60+dropShaddowDistance]
-	team2ScoreBox.rect.center = [bigScorePositionRight+dropShaddowDistance, (windowSizeY // 2) +60+dropShaddowDistance]
+	# lower-right
+	team1ScoreBox.rect.center = [bigScorePositionLeft + dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset + dropShaddowDistance]
+	team2ScoreBox.rect.center = [bigScorePositionRight + dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset + dropShaddowDistance]
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
-	#-----
+	# upper-left
+	team1ScoreBox.rect.center = [bigScorePositionLeft - dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset - dropShaddowDistance]
+	team2ScoreBox.rect.center = [bigScorePositionRight - dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset - dropShaddowDistance]
+	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
+	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
+	# upper-right
+	team1ScoreBox.rect.center = [bigScorePositionLeft + dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset - dropShaddowDistance]
+	team2ScoreBox.rect.center = [bigScorePositionRight + dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset - dropShaddowDistance]
+	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
+	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
+	# lower-left
+	team1ScoreBox.rect.center = [bigScorePositionLeft - dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset + dropShaddowDistance]
+	team2ScoreBox.rect.center = [bigScorePositionRight - dropShaddowDistance, (windowSizeY // 2)+teamScoreYoffset + dropShaddowDistance]
+	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
+	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
+	#----- Drop Shaddow END
+
 	team1ScoreBox.white()
 	team2ScoreBox.white()
-	team1ScoreBox.rect.center = [bigScorePositionLeft, (windowSizeY // 2) +60]
-	team2ScoreBox.rect.center = [bigScorePositionRight, (windowSizeY // 2) +60]
+	team1ScoreBox.rect.center = [bigScorePositionLeft, (windowSizeY // 2) +teamScoreYoffset]
+	team2ScoreBox.rect.center = [bigScorePositionRight, (windowSizeY // 2) +teamScoreYoffset]
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
 def draw_OFFAIR_filter():
