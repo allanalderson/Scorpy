@@ -21,6 +21,7 @@
 5.7 Clock callable on-air. Corner position tweaks.
 5.8 Refactoring, Quick access score bug fixed.
 5.9 Corner and graphics tweaks, removed diagnostic printouts. Drop-shaddow on big scores
+6.0 Clock display allowed after Replay screen. Team Swap variation allowed on Titles Screen
 
 '''
 
@@ -703,11 +704,13 @@ while running:
 				if live_screen_ID == "input":  # if inputscreen true then
 					live_screen_ID = "Scores"  # exit.
 					activeTextBox = 0
-					on_air = False
-				else: # if inputscreen not active...
+
+				elif live_screen_ID != "input" and on_air == False:
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
+
+
 			if live_screen_ID == "input":
 				if activeTextBox == 11:  # major title
 					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
@@ -860,7 +863,7 @@ while running:
 						on_air = False
 						previousKey = "r"
 						live_screen_ID = "Replay"
-						showTimer = False
+						# showTimer = False
 					if event.key == pygame.K_b:
 						on_air = False
 						if live_screen_ID == "Bars":
@@ -885,7 +888,7 @@ while running:
 							variation_watermark = variation_watermark + 1
 							if variation_watermark > 4:
 								variation_watermark = 1
-						if live_screen_ID == "Fulltime" or live_screen_ID == "Halftime" or (previousKey == "s" and live_screen_ID == "Scores"):
+						if live_screen_ID == "Fulltime" or live_screen_ID == "Titles" or live_screen_ID == "Halftime" or (previousKey == "s" and live_screen_ID == "Scores"):
 							temp1score = team1Score
 							team1Score = team2Score
 							team2Score = temp1score
