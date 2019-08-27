@@ -21,7 +21,9 @@
 5.7 Clock callable on-air. Corner position tweaks.
 5.8 Refactoring, Quick access score bug fixed.
 5.9 Corner and graphics tweaks, removed diagnostic printouts. Drop-shaddow on big scores
-6.0 Clock display allowed after Replay screen. Team Swap variation allowed on Titles Screen
+6.0 Clock display allowed after Replay screen. Team Swap variation allowed on Titles Screen.
+6.1 Added timer adjust with    <   >   keys.
+
 
 '''
 
@@ -636,6 +638,12 @@ def draw_watermark():
 		if variation_watermark == 4:
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
+def increment_timer(tick_delta):
+	global countdown_ticks
+	countdown_ticks = countdown_ticks + tick_delta
+	update_clocks()
+
+
 
 
 # ------------------------------------------------
@@ -879,6 +887,14 @@ while running:
 						else:
 							live_screen_ID = "Scores"
 				if on_air == False:
+					if event.key == pygame.K_PERIOD:
+						if live_screen_ID ==  "Scores":
+							increment_timer(10)
+					if event.key == pygame.K_COMMA:
+						if live_screen_ID ==  "Scores":
+							increment_timer(-10)
+
+
 					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
 						if live_screen_ID == "Replay" and previousKey == "r":
 							variation_replay = variation_replay + 1
