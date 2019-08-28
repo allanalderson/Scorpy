@@ -24,6 +24,7 @@
 6.0 Clock display allowed after Replay screen. Team Swap variation allowed on Titles Screen.
 6.1 Added timer adjust with    <   >   keys.
 6.11 Changed timer adjust for seconds (not minutes)  when off-air.
+6.2 Added Software Version on Bars screen.
 
 
 '''
@@ -34,13 +35,15 @@ from pygame.locals import *
 import os
 import sys
 
-# sys.path.append('/boot/')
+
+scorpy_version = " Scorpy 6.2 "
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
 windowSizeY = 1080
 team1Score = 0
 team2Score = 0
+# sys.path.append('/boot/')
 liveshot = False
 screen = pygame.display.set_mode([windowSizeX, windowSizeY])
 screen = pygame.display.set_mode([windowSizeX, windowSizeY], pygame.FULLSCREEN)
@@ -70,6 +73,7 @@ green3 = (10, 195, 10)
 green4 = (15, 230, 15) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
+grey = (130, 130, 130)
 clock = pygame.time.Clock()
 lowerThirdBoxThickness = 190 #110
 LT_rasing = False
@@ -88,13 +92,26 @@ shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
 live_screen_ID = "Bars"
 on_air = True
 
-font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)
+font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 55)
 fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
 fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 62)
 tabexit = " Use curser keys to move,  TAB key to exit. "
 tabexitR = font.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
+
+
+versionR = font.render(scorpy_version, True, grey, black)
+version_rect = versionR.get_rect()
+version_rect.center = versionR.get_rect().center # Use the center from now on.
+# Use it...
+# version_rect.center = [windowSizeX / 2, 950]  # Put it somewhere
+# screen.blit(versionR, version_rect)
+
+
+
+
+
 titlesRequestText = " Titles                       "
 teamsRequestText  =  " Teams                     "
 requestFont = pygame.font.Font('scorpy_resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 180)
@@ -260,7 +277,10 @@ except:
 
 
 
-
+def draw_bars_screen():
+	screen.blit(bars, full_screen_rect)
+	version_rect.center = [windowSizeX / 2, 140] # Put it somewhere
+	screen.blit(versionR, version_rect)
 def draw_greenscreen():
 	screen.fill(greenScreen)
 	if liveshot == True:
@@ -689,7 +709,7 @@ while running:
 		draw_LOGO_screen()
 		on_air = False
 	if live_screen_ID == "Bars":
-		screen.blit(bars, full_screen_rect)
+		draw_bars_screen()
 		draw_OFFAIR_filter()
 	if live_screen_ID == "input":
 		draw_input_screen()
