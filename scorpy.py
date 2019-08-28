@@ -23,6 +23,7 @@
 5.9 Corner and graphics tweaks, removed diagnostic printouts. Drop-shaddow on big scores
 6.0 Clock display allowed after Replay screen. Team Swap variation allowed on Titles Screen.
 6.1 Added timer adjust with    <   >   keys.
+6.11 Changed timer adjust for seconds (not minutes)  when off-air.
 
 
 '''
@@ -582,7 +583,7 @@ def update_clocks():
 			countdown_ticks = countdown_ticks - 1
 		else:
 			countdown_ticks = countdown_ticks + 1
-	if countdown_ticks < -5:
+	if countdown_ticks < -4:
 		showTimer = False
 	if countdown_ticks > -1:
 		countdown_minutes = countdown_ticks//60
@@ -639,8 +640,15 @@ def draw_watermark():
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
 def increment_timer(tick_delta):
+
 	global countdown_ticks
+	global countdown_seconds
+	global countdown_minutes
+
 	countdown_ticks = countdown_ticks + tick_delta
+
+	countdown_seconds = countdown_ticks % 60
+	countdown_minutes = countdown_ticks//60
 	update_clocks()
 
 
@@ -886,13 +894,13 @@ while running:
 							live_screen_ID = "Help1"
 						else:
 							live_screen_ID = "Scores"
-				if on_air == False:
-					if event.key == pygame.K_PERIOD:
+				if on_air == False :
+					if event.key == pygame.K_PERIOD and timer_running == False:
 						if live_screen_ID ==  "Scores":
-							increment_timer(10)
-					if event.key == pygame.K_COMMA:
+							increment_timer(1)
+					elif event.key == pygame.K_COMMA and timer_running == False:
 						if live_screen_ID ==  "Scores":
-							increment_timer(-10)
+							increment_timer(-1)
 
 
 					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
