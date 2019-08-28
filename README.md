@@ -31,6 +31,8 @@ c = Clock (show/hide).
 
 '-' = Clock stop.
 
+<  > = Adjust countdown seconds (if off-air)
+
 v = Variation on the current theme.
 
 b = Bars (but no tone)
@@ -53,6 +55,6 @@ and should contain an alpha (transparency) channel.
 The watermark filesize should be about 250 x 100 pixels.
 
 
-The folder 'scorpy_resources' contains fonts and images that Scorpy needs.
+The folder 'scorpy_resources' contains fonts and images that Scorpy needs. Regardless of version, this zipped file will always contain all scorpy resources.
 
 
