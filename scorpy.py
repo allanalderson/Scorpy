@@ -25,6 +25,9 @@
 6.1 Added timer adjust with    <   >   keys.
 6.11 Changed timer adjust for seconds (not minutes)  when off-air.
 6.2 Added Software Version on Bars screen.
+6.3 Smart countdown reset with user_minutes.
+6.4 Smart erase Titles & Teams
+
 
 
 '''
@@ -36,7 +39,7 @@ import os
 import sys
 
 
-scorpy_version = " Scorpy 6.2 "
+scorpy_version = "Scorpy 6.4"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -53,6 +56,7 @@ bigScorePositionRight = 1443
 bigScorePositionLeft = 480
 countdown_seconds = 0
 countdown_minutes = 40
+user_minutes = 0
 timer_running = False
 variation_timer = 5
 variation_replay = 1
@@ -65,7 +69,7 @@ counting_down = True
 white = (250,250,250)
 yellow = (220,200,160)
 black = (0,0,0)
-blue = (30, 30, 130)
+blue = (30, 30, 140)
 red = (250, 80, 80)
 greenScreen = (0, 150, 0)
 green2 = (0, 175, 0)
@@ -73,7 +77,7 @@ green3 = (10, 195, 10)
 green4 = (15, 230, 15) # bright green for timer preview
 green_filter = pygame.Surface(screen.get_size(), pygame.SRCALPHA, 32)
 green_filter.fill((0, 150, 0, 190))
-grey = (130, 130, 130)
+grey = (100, 100, 100)
 clock = pygame.time.Clock()
 lowerThirdBoxThickness = 190 #110
 LT_rasing = False
@@ -92,16 +96,16 @@ shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
 live_screen_ID = "Bars"
 on_air = True
 
-font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 55)
+fontGeneral = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)
 fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
 fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 62)
 tabexit = " Use curser keys to move,  TAB key to exit. "
-tabexitR = font.render(tabexit, True, greenScreen, green2)
+tabexitR = fontGeneral.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
 
 
-versionR = font.render(scorpy_version, True, grey, black)
+versionR = fontGeneral.render(scorpy_version, True, grey, black)
 version_rect = versionR.get_rect()
 version_rect.center = versionR.get_rect().center # Use the center from now on.
 # Use it...
@@ -157,7 +161,7 @@ class TextBox(pygame.sprite.Sprite):
 		self.update()
 	def update(self):
 		old_rect_pos = self.rect.center # memory
-		# self.image = self.font.render(self.text, True, green3)
+		# self.image = self.fontGeneral.render(self.text, True, green3)
 		self.rect = self.image.get_rect()
 		self.rect.center = old_rect_pos
 	def white(self):
@@ -328,13 +332,13 @@ def draw_input_screen():
 	else:
 		countdownMinutesText = str(countdown_minutes)
 	countdownMinutesText = "< " + countdownMinutesText
-	countdownSecondsText = countdownSecondsText + " >  minutes"
+	countdownSecondsText = countdownSecondsText + " >  Timer"
 	if activeTextBox == 5:
 		countdownText = countdownMinutesText + ":" + countdownSecondsText
-		countdownTextR = font.render(countdownText, False, green4,green2)  # Render it.
+		countdownTextR = fontGeneral.render(countdownText, False, green4, green2)  # Render it.
 	else:
 		countdownText = countdownMinutesText + ":" + countdownSecondsText
-		countdownTextR = font.render(countdownText, False, green2)  # Render it.
+		countdownTextR = fontGeneral.render(countdownText, False, green2)  # Render it.
 	countdown_rect = [800, 700]  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 	tabexit_rect.center = [windowSizeX / 2, 950] # Put it somewhere
@@ -372,12 +376,23 @@ def draw_replay_screen():
 	screen.blit(replay, replay_rect)
 	draw_OFFAIR_filter()
 def draw_halftime_screen():
+	global countdown_ticks
+	global timer_running
+	# global user_minutes
+	if countdown_ticks < 1:
+		countdown_ticks = user_minutes * 60
+		timer_running = False
 	draw_greenscreen()
 	screen.blit(halfTimeGraphic, full_screen_rect)
 	draw_big_score_screen()
 	draw_OFFAIR_filter()
 def draw_fulltime_screen():
+	global countdown_ticks
+	global timer_running
 	draw_greenscreen()
+	if countdown_ticks < 1:
+		countdown_ticks = user_minutes * 60
+		timer_running = False
 	screen.blit(fullTimeGraphic, full_screen_rect)
 	draw_big_score_screen()
 	draw_OFFAIR_filter()
@@ -660,13 +675,10 @@ def draw_watermark():
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
 def increment_timer(tick_delta):
-
 	global countdown_ticks
 	global countdown_seconds
 	global countdown_minutes
-
 	countdown_ticks = countdown_ticks + tick_delta
-
 	countdown_seconds = countdown_ticks % 60
 	countdown_minutes = countdown_ticks//60
 	update_clocks()
@@ -729,8 +741,19 @@ while running:
 		if event.type == pygame.QUIT:
 			running = False
 		if event.type == pygame.KEYUP:
+			if majorTitleName.text == "Major Titl":
+				majorTitleName.text = ""
+			if minorTitleName.text == "Minor Titl":
+				minorTitleName.text = ""
+
+			if team1name.text == "Team":
+				team1name.text = ""
+			if team2name.text == "Team":
+				team2name.text = ""
+
 			if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
 				shiftDown = False
+
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				if live_screen_ID == "Help2":
@@ -826,6 +849,7 @@ while running:
 							countdown_minutes = countdown_minutes + 5
 						else:
 							countdown_minutes = countdown_minutes + 1
+					user_minutes = countdown_minutes
 			else:  # ------ NOT INPUT SCREEN
 				if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
 					previousKey = "space"
@@ -978,7 +1002,6 @@ while running:
 							LT_box_position_UP = LT_box_position_UP + 2
 						if event.key == pygame.K_UP and LT_box_position_UP > 700:
 							LT_box_position_UP = LT_box_position_UP - 2
-
 
 
 
