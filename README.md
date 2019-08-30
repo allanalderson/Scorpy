@@ -31,7 +31,7 @@ c = Clock (show/hide).
 
 '-' = Clock stop.
 
-<  > = Adjust countdown seconds (if off-air)
+<  > = Adjust countdown seconds
 
 v = Variation on the current theme.
 
