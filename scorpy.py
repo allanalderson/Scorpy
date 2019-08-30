@@ -27,6 +27,7 @@
 6.2 Added Software Version on Bars screen.
 6.3 Smart countdown reset with user_minutes.
 6.4 Smart erase Titles & Teams
+6.5 Bugfix: timer adjust seconds
 
 
 
@@ -39,7 +40,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 6.4"
+scorpy_version = "Scorpy 6.5"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -431,7 +432,6 @@ def draw_score_screen():
 		else: #  transition_trigger false:
 			LT_rasing = False
 			LT_lowering = True
-			# activeTextBox = 0 #xxxx
 	if LT_rasing == True and LT_box_position > LT_box_position_UP:
 		LT_counter = LT_counter - 1 # raise
 	else:
@@ -607,17 +607,22 @@ def draw_USER9_screen():
 def draw_LOGO_screen():
 	draw_greenscreen()
 	screen.blit(logo, full_screen_rect)  # Draw it.
-def update_clocks():
+
+def update_tick():
 	global countdown_ticks
-	global countdownText
-	global countdown_seconds
-	global countdown_minutes
-	global showTimer
 	if timer_running == True:
 		if counting_down == True:
 			countdown_ticks = countdown_ticks - 1
 		else:
 			countdown_ticks = countdown_ticks + 1
+	update_clocks()
+
+def update_clocks():
+	global countdownText
+	global countdown_seconds
+	global countdown_minutes
+	global showTimer
+
 	if countdown_ticks < -4:
 		showTimer = False
 	if countdown_ticks > -1:
@@ -674,7 +679,7 @@ def draw_watermark():
 		if variation_watermark == 4:
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
-def increment_timer(tick_delta):
+def adjust_timer(tick_delta):
 	global countdown_ticks
 	global countdown_seconds
 	global countdown_minutes
@@ -737,7 +742,7 @@ while running:
 
 	for event in pygame.event.get():
 		if event.type == USEREVENT + 0:
-			update_clocks()
+			update_tick()
 		if event.type == pygame.QUIT:
 			running = False
 		if event.type == pygame.KEYUP:
@@ -939,12 +944,12 @@ while running:
 						else:
 							live_screen_ID = "Scores"
 				if on_air == False :
-					if event.key == pygame.K_PERIOD and timer_running == False:
+					if event.key == pygame.K_PERIOD:
 						if live_screen_ID ==  "Scores":
-							increment_timer(1)
-					elif event.key == pygame.K_COMMA and timer_running == False:
+							adjust_timer(1)
+					elif event.key == pygame.K_COMMA:
 						if live_screen_ID ==  "Scores":
-							increment_timer(-1)
+							adjust_timer(-1)
 
 
 					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
@@ -1002,8 +1007,6 @@ while running:
 							LT_box_position_UP = LT_box_position_UP + 2
 						if event.key == pygame.K_UP and LT_box_position_UP > 700:
 							LT_box_position_UP = LT_box_position_UP - 2
-
-
 
 
 	draw_watermark()
