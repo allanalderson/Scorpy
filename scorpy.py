@@ -28,6 +28,7 @@
 6.3 Smart countdown reset with user_minutes.
 6.4 Smart erase Titles & Teams
 6.5 Bugfix: timer adjust seconds
+6.6 Blue Titles, Instant Replay.
 
 
 
@@ -40,7 +41,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 6.5"
+scorpy_version = "Scorpy 6.6"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -66,6 +67,7 @@ countdown_ticks = (countdown_minutes*60)+(countdown_seconds)
 countdownMinutesText = str(countdown_minutes)
 previousKey = "0"
 showWatermark = False
+showReplay = False
 counting_down = True
 white = (250,250,250)
 yellow = (220,200,160)
@@ -189,7 +191,7 @@ class TextBox(pygame.sprite.Sprite):
 		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 40)
 		self.update()
 	def fontTeamNameUnderScore(self):
-		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 55)  #55
+		self.font = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)  #55
 		self.update()
 	def fontTeamVS(self):
 		self.font = pygame.font.Font('scorpy_resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 100)  #55
@@ -348,8 +350,8 @@ def draw_title_screen():
 	draw_greenscreen()
 	team1name.blue()
 	team2name.blue()
-	majorTitleName.white()
-	minorTitleName.white()
+	majorTitleName.blue()
+	minorTitleName.blue()
 	majorTitleName.rect.center = [(windowSizeX // 2), 180]
 	minorTitleName.rect.center = [(windowSizeX // 2), 315]
 	team1name.rect.center = [(windowSizeX // 2), 580]
@@ -363,18 +365,6 @@ def draw_title_screen():
 	screen.blit(minorTitleName.image, minorTitleName.rect)
 	screen.blit(team1name.image, team1name.rect)
 	screen.blit(team2name.image, team2name.rect)
-	draw_OFFAIR_filter()
-def draw_replay_screen():
-	draw_greenscreen()
-	if variation_replay == 1:
-		replay_rect.center = corner1
-	if variation_replay == 2:
-		replay_rect.center = corner2
-	if variation_replay == 3:
-		replay_rect.center =corner3
-	if variation_replay == 4:
-		replay_rect.center = corner4
-	screen.blit(replay, replay_rect)
 	draw_OFFAIR_filter()
 def draw_halftime_screen():
 	global countdown_ticks
@@ -607,7 +597,6 @@ def draw_USER9_screen():
 def draw_LOGO_screen():
 	draw_greenscreen()
 	screen.blit(logo, full_screen_rect)  # Draw it.
-
 def update_tick():
 	global countdown_ticks
 	if timer_running == True:
@@ -616,7 +605,6 @@ def update_tick():
 		else:
 			countdown_ticks = countdown_ticks + 1
 	update_clocks()
-
 def update_clocks():
 	global countdownText
 	global countdown_seconds
@@ -668,7 +656,7 @@ def draw_timer_panel():
 	if variation_timer == 5: # lower third position
 		countdown_rect.center = [(windowSizeX // 2), LT_box_position + 2]
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
-def draw_watermark():
+def draw_watermark_image():
 	if showWatermark == True:
 		if variation_watermark == 1:
 			watermark_rect.center = corner1  # Put it somewhere
@@ -679,6 +667,17 @@ def draw_watermark():
 		if variation_watermark == 4:
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
+def draw_replay_image():
+	if showReplay == True:
+		if variation_replay == 1:
+			replay_rect.center = corner1
+		if variation_replay == 2:
+			replay_rect.center = corner2
+		if variation_replay == 3:
+			replay_rect.center =corner3
+		if variation_replay == 4:
+			replay_rect.center = corner4
+		screen.blit(replay, replay_rect)
 def adjust_timer(tick_delta):
 	global countdown_ticks
 	global countdown_seconds
@@ -736,8 +735,6 @@ while running:
 	if live_screen_ID == "Help2":
 		screen.blit(help2, full_screen_rect)
 		on_air = False
-	if live_screen_ID == "Replay":
-		draw_replay_screen()
 
 
 	for event in pygame.event.get():
@@ -746,19 +743,18 @@ while running:
 		if event.type == pygame.QUIT:
 			running = False
 		if event.type == pygame.KEYUP:
+			if event.key == pygame.K_r:
+				showReplay = False
 			if majorTitleName.text == "Major Titl":
 				majorTitleName.text = ""
 			if minorTitleName.text == "Minor Titl":
 				minorTitleName.text = ""
-
 			if team1name.text == "Team":
 				team1name.text = ""
 			if team2name.text == "Team":
 				team2name.text = ""
-
 			if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
 				shiftDown = False
-
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				if live_screen_ID == "Help2":
@@ -768,13 +764,10 @@ while running:
 				if live_screen_ID == "input":  # if inputscreen true then
 					live_screen_ID = "Scores"  # exit.
 					activeTextBox = 0
-
 				elif live_screen_ID != "input" and on_air == False:
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
-
-
 			if live_screen_ID == "input":
 				if activeTextBox == 11:  # major title
 					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
@@ -925,10 +918,9 @@ while running:
 						live_screen_ID = "9"
 						on_air = False
 					if event.key == pygame.K_r:
-						on_air = False
 						previousKey = "r"
-						live_screen_ID = "Replay"
-						# showTimer = False
+						showReplay = True
+						showTimer = False
 					if event.key == pygame.K_b:
 						on_air = False
 						if live_screen_ID == "Bars":
@@ -943,6 +935,36 @@ while running:
 							live_screen_ID = "Help1"
 						else:
 							live_screen_ID = "Scores"
+				if event.key == pygame.K_v:
+					if live_screen_ID == "Help2":
+						live_screen_ID = "Help1"
+					elif live_screen_ID == "Help1":
+						live_screen_ID = "Help2"
+					if previousKey == "r":
+						variation_replay = variation_replay + 1
+						if variation_replay > 4:
+							variation_replay = 1
+					if previousKey == "w":
+						variation_watermark = variation_watermark + 1
+						if variation_watermark > 4:
+							variation_watermark = 1
+					if previousKey == "c" and live_screen_ID == "Scores":
+						variation_timer = variation_timer + 1
+						if variation_timer > 5:
+							variation_timer = 1
+					if live_screen_ID == "Fulltime" or live_screen_ID == "Titles" or live_screen_ID == "Halftime" or (
+							previousKey == "s" and live_screen_ID == "Scores"):
+						temp1score = team1Score
+						team1Score = team2Score
+						team2Score = temp1score
+						temp1name = team1name
+						team1name = team2name
+						team2name = temp1name
+						team1ScoreBox.text = str(team1Score)
+						team1ScoreBox.update()
+						team2ScoreBox.text = str(team2Score)
+						team2ScoreBox.update()
+
 				if on_air == False :
 					if event.key == pygame.K_PERIOD:
 						if live_screen_ID ==  "Scores":
@@ -951,35 +973,6 @@ while running:
 						if live_screen_ID ==  "Scores":
 							adjust_timer(-1)
 
-
-					if event.key == pygame.K_v:  # VARIATIONS ADJUSTMENTS ----------------
-						if live_screen_ID == "Replay" and previousKey == "r":
-							variation_replay = variation_replay + 1
-							if variation_replay > 4:
-								variation_replay = 1
-						if previousKey == "w":
-							variation_watermark = variation_watermark + 1
-							if variation_watermark > 4:
-								variation_watermark = 1
-						if live_screen_ID == "Fulltime" or live_screen_ID == "Titles" or live_screen_ID == "Halftime" or (previousKey == "s" and live_screen_ID == "Scores"):
-							temp1score = team1Score
-							team1Score = team2Score
-							team2Score = temp1score
-							temp1name = team1name
-							team1name = team2name
-							team2name = temp1name
-							team1ScoreBox.text = str(team1Score)
-							team1ScoreBox.update()
-							team2ScoreBox.text = str(team2Score)
-							team2ScoreBox.update()
-						if live_screen_ID == "Scores" and showTimer == False and previousKey == "c":
-							variation_timer = variation_timer + 1
-							if variation_timer > 5:
-								variation_timer = 1
-						if live_screen_ID == "Help2":
-							live_screen_ID = "Help1"
-						elif live_screen_ID == "Help1":
-							live_screen_ID = "Help2"
 					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
 						activeTextBox = 3
 					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
@@ -1009,7 +1002,8 @@ while running:
 							LT_box_position_UP = LT_box_position_UP - 2
 
 
-	draw_watermark()
+	draw_watermark_image()
+	draw_replay_image()
 	pygame.display.update()
 	clock.tick(25)
 pygame.quit()
