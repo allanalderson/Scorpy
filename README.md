@@ -41,7 +41,9 @@ w = watermark.png (show/hide)
 
 ? = help screen.
 
-1~9 User images (e.g:  1.jpg @ 1920x1080).
+1~9 User images (e.g:  image1.png @ 1920x1080).
+
+0 = Kill all user images.
 
 If the Raspberry Pi is configured to mount an external
 USB drive to '../../mnt/volume/', 9 user images will be
