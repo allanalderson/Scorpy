@@ -29,6 +29,7 @@
 6.4 Smart erase Titles & Teams
 6.5 Bugfix: timer adjust seconds
 6.6 Blue Titles, Instant Replay.
+6.7 Sticky userImages 1~9. 0 = kill all userImages
 
 
 
@@ -41,7 +42,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 6.6"
+scorpy_version = "Scorpy 6.7"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -98,6 +99,16 @@ validChars = " `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
 shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
 live_screen_ID = "Bars"
 on_air = True
+showImage1 = False
+showImage2 = False
+showImage3 = False
+showImage4 = False
+showImage5 = False
+showImage6 = False
+showImage7 = False
+showImage8 = False
+showImage9 = False
+
 
 fontGeneral = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)
 fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
@@ -134,7 +145,6 @@ full_screen_rect.center = screen.get_rect().center  # Set image centers
 bars = pygame.image.load('scorpy_resources/Graphics/bars1080.png').convert()
 halfTimeGraphic = pygame.image.load('scorpy_resources/Graphics/halfTimeImage.png').convert_alpha()
 fullTimeGraphic = pygame.image.load('scorpy_resources/Graphics/fullTimeImage.png').convert_alpha()
-logo = pygame.image.load('scorpy_resources/Graphics/logo.png').convert()
 help1 = pygame.image.load('scorpy_resources/Graphics/help1.png').convert()
 help2 = pygame.image.load('scorpy_resources/Graphics/help2.png').convert()
 liveshot_graphic = pygame.image.load('scorpy_resources/Graphics/liveshot.png').convert()
@@ -245,41 +255,41 @@ watermark_rect = watermark.get_rect()  # Get it's dimentions.
 watermark_rect.center = watermark.get_rect().center  # Set it's center.
 
 try:
-	userImage1 = pygame.image.load('../../mnt/volume/image1.jpg')
+	userImage1 = pygame.image.load('../../mnt/volume/image1.png').convert_alpha()
 except:
-	userImage1 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage1 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage2 = pygame.image.load('../../mnt/volume/2.jpg')
+	userImage2 = pygame.image.load('../../mnt/volume/image2.png').convert_alpha()
 except:
-	userImage2 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage2 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage3 = pygame.image.load('../../mnt/volume/3.jpg')
+	userImage3 = pygame.image.load('../../mnt/volume/image3.png').convert_alpha()
 except:
-	userImage3 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage3 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage4 = pygame.image.load('../../mnt/volume/4.jpg')
+	userImage4 = pygame.image.load('../../mnt/volume/image4.png').convert_alpha()
 except:
-	userImage4 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage4 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage5 = pygame.image.load('../../mnt/volume/5.jpg')
+	userImage5 = pygame.image.load('../../mnt/volume/image5.png').convert_alpha()
 except:
-	userImage5 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage5 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage6 = pygame.image.load('../../mnt/volume/6.jpg')
+	userImage6 = pygame.image.load('../../mnt/volume/image6.png').convert_alpha()
 except:
-	userImage6 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage6 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage7 = pygame.image.load('../../mnt/volume/7.jpg')
+	userImage7 = pygame.image.load('../../mnt/volume/image7.png').convert_alpha()
 except:
-	userImage7 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage7 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage8 = pygame.image.load('../../mnt/volume/8.jpg')
+	userImage8 = pygame.image.load('../../mnt/volume/image8.png').convert_alpha()
 except:
-	userImage8 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage8 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 try:
-	userImage9 = pygame.image.load('../../mnt/volume/9.jpg')
+	userImage9 = pygame.image.load('../../mnt/volume/image9.png').convert_alpha()
 except:
-	userImage9 = pygame.image.load('scorpy_resources/Graphics/missingImage.png').convert()
+	userImage9 = pygame.image.load('scorpy_resources/Graphics/missingUserImage.png').convert_alpha()
 
 
 
@@ -300,7 +310,6 @@ def draw_input_screen():
 	global countdown_minutes
 	global showTimer
 	showTimer = False
-	draw_greenscreen()
 	team1name.green0()
 	team2name.green0()
 	majorTitleName.green0()
@@ -347,7 +356,6 @@ def draw_input_screen():
 	tabexit_rect.center = [windowSizeX / 2, 950] # Put it somewhere
 	screen.blit(tabexitR, tabexit_rect)
 def draw_title_screen():
-	draw_greenscreen()
 	team1name.blue()
 	team2name.blue()
 	majorTitleName.blue()
@@ -373,14 +381,13 @@ def draw_halftime_screen():
 	if countdown_ticks < 1:
 		countdown_ticks = user_minutes * 60
 		timer_running = False
-	draw_greenscreen()
 	screen.blit(halfTimeGraphic, full_screen_rect)
 	draw_big_score_screen()
 	draw_OFFAIR_filter()
 def draw_fulltime_screen():
 	global countdown_ticks
 	global timer_running
-	draw_greenscreen()
+
 	if countdown_ticks < 1:
 		countdown_ticks = user_minutes * 60
 		timer_running = False
@@ -402,7 +409,7 @@ def draw_score_screen():
 		lowerThirdBoxThickness = 45 # small box 45
 	if LT_box_position > 990:
 		lowerThirdBoxThickness = 100 # large box 100
-	draw_greenscreen()
+
 	draw_timer_preview()
 	team1name.green3()
 	team2name.green3()
@@ -558,45 +565,26 @@ def draw_OFFAIR_filter():
 			team1ScoreBox.update()
 			team2ScoreBox.text = str(team2Score)
 			team2ScoreBox.update()
-def draw_USER1_screen():
-	draw_greenscreen()
-	screen.blit(userImage1, full_screen_rect) # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER2_screen():
-	draw_greenscreen()
-	screen.blit(userImage2, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER3_screen():
-	draw_greenscreen()
-	screen.blit(userImage3, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER4_screen():
-	draw_greenscreen()
-	screen.blit(userImage4, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER5_screen():
-	draw_greenscreen()
-	screen.blit(userImage5, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER6_screen():
-	draw_greenscreen()
-	screen.blit(userImage6, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER7_screen():
-	draw_greenscreen()
-	screen.blit(userImage7, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER8_screen():
-	draw_greenscreen()
-	screen.blit(userImage8, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_USER9_screen():
-	draw_greenscreen()
-	screen.blit(userImage9, full_screen_rect)  # Draw it.
-	draw_OFFAIR_filter()
-def draw_LOGO_screen():
-	draw_greenscreen()
-	screen.blit(logo, full_screen_rect)  # Draw it.
+def draw_userImages():
+	if showImage1 == True:
+		screen.blit(userImage1, full_screen_rect) # Draw it.
+	if showImage2 == True:
+		screen.blit(userImage2, full_screen_rect)  # Draw it.
+	if showImage3 == True:
+		screen.blit(userImage3, full_screen_rect) # Draw it.
+	if showImage4 == True:
+		screen.blit(userImage4, full_screen_rect)  # Draw it.
+	if showImage5 == True:
+		screen.blit(userImage5, full_screen_rect) # Draw it.
+	if showImage6 == True:
+		screen.blit(userImage6, full_screen_rect)  # Draw it.
+	if showImage7 == True:
+		screen.blit(userImage7, full_screen_rect) # Draw it.
+	if showImage8 == True:
+		screen.blit(userImage8, full_screen_rect)  # Draw it.
+	if showImage9 == True:
+		screen.blit(userImage9, full_screen_rect)  # Draw it.
+
 def update_tick():
 	global countdown_ticks
 	if timer_running == True:
@@ -686,6 +674,25 @@ def adjust_timer(tick_delta):
 	countdown_seconds = countdown_ticks % 60
 	countdown_minutes = countdown_ticks//60
 	update_clocks()
+def killUserImages():
+	global showImage1
+	global showImage2
+	global showImage3
+	global showImage4
+	global showImage5
+	global showImage6
+	global showImage7
+	global showImage8
+	global showImage9
+	showImage1 = False
+	showImage2 = False
+	showImage3 = False
+	showImage4 = False
+	showImage5 = False
+	showImage6 = False
+	showImage7 = False
+	showImage8 = False
+	showImage9 = False
 
 
 
@@ -695,6 +702,7 @@ def adjust_timer(tick_delta):
 
 pygame.time.set_timer(USEREVENT + 0, 1000)
 while running:
+	draw_greenscreen()
 	if live_screen_ID == "Titles":
 		draw_title_screen()
 	if live_screen_ID == "Scores":
@@ -703,27 +711,6 @@ while running:
 		draw_halftime_screen()
 	if live_screen_ID == "Fulltime":
 		draw_fulltime_screen()
-	if live_screen_ID == "1":
-		draw_USER1_screen()
-	if live_screen_ID == "2":
-		draw_USER2_screen()
-	if live_screen_ID == "3":
-		draw_USER3_screen()
-	if live_screen_ID == "4":
-		draw_USER4_screen()
-	if live_screen_ID == "5":
-		draw_USER5_screen()
-	if live_screen_ID == "6":
-		draw_USER6_screen()
-	if live_screen_ID == "7":
-		draw_USER7_screen()
-	if live_screen_ID == "8":
-		draw_USER8_screen()
-	if live_screen_ID == "9":
-		draw_USER9_screen()
-	if live_screen_ID == "0":
-		draw_LOGO_screen()
-		on_air = False
 	if live_screen_ID == "Bars":
 		draw_bars_screen()
 		draw_OFFAIR_filter()
@@ -732,10 +719,10 @@ while running:
 	if live_screen_ID == "Help1":
 		screen.blit(help1, full_screen_rect)
 		activeTextBox = 0
+
 	if live_screen_ID == "Help2":
 		screen.blit(help2, full_screen_rect)
 		on_air = False
-
 
 	for event in pygame.event.get():
 		if event.type == USEREVENT + 0:
@@ -765,6 +752,7 @@ while running:
 					live_screen_ID = "Scores"  # exit.
 					activeTextBox = 0
 				elif live_screen_ID != "input" and on_air == False:
+					killUserImages()
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
@@ -848,7 +836,55 @@ while running:
 						else:
 							countdown_minutes = countdown_minutes + 1
 					user_minutes = countdown_minutes
-			else:  # ------ NOT INPUT SCREEN
+			else:  # ------ NOT THE INPUT SCREEN
+				if event.key == pygame.K_w:
+					previousKey = "w"
+					showWatermark = not showWatermark
+				if event.key == pygame.K_1:
+					if showImage1 == True:
+						showImage1 = False
+					else:
+						showImage1 = True
+				if event.key == pygame.K_2:
+					if showImage2 == True:
+						showImage2 = False
+					else:
+						showImage2 = True
+				if event.key == pygame.K_3:
+					if showImage3 == True:
+						showImage3 = False
+					else:
+						showImage3 = True
+				if event.key == pygame.K_4:
+					if showImage4 == True:
+						showImage4 = False
+					else:
+						showImage4 = True
+				if event.key == pygame.K_5:
+					if showImage5 == True:
+						showImage5 = False
+					else:
+						showImage5 = True
+				if event.key == pygame.K_6:
+					if showImage6 == True:
+						showImage6 = False
+					else:
+						showImage6 = True
+				if event.key == pygame.K_7:
+					if showImage7 == True:
+						showImage7 = False
+					else:
+						showImage7 = True
+				if event.key == pygame.K_8:
+					if showImage8 == True:
+						showImage8 = False
+					else:
+						showImage8 = True
+				if event.key == pygame.K_9:
+					if showImage9 == True:
+						showImage9 = False
+					else:
+						showImage9 = True
 				if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
 					previousKey = "space"
 					if activeTextBox > 0:
@@ -859,9 +895,6 @@ while running:
 						live_screen_ID = "Help1"
 						on_air = False
 						activeTextBox = 11
-				if event.key == pygame.K_w:
-					previousKey = "w"
-					showWatermark = not showWatermark
 				if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
 					pass
 					timer_running = False
@@ -888,40 +921,14 @@ while running:
 						on_air = False
 						live_screen_ID = "Fulltime"
 					if event.key == pygame.K_0:
-						live_screen_ID = "0"
-						on_air = False
-					if event.key == pygame.K_1:
-						live_screen_ID = "1"
-						on_air = False
-					if event.key == pygame.K_2:
-						live_screen_ID = "2"
-						on_air = False
-					if event.key == pygame.K_3:
-						live_screen_ID = "3"
-						on_air = False
-					if event.key == pygame.K_4:
-						live_screen_ID = "4"
-						on_air = False
-					if event.key == pygame.K_5:
-						live_screen_ID = "5"
-						on_air = False
-					if event.key == pygame.K_6:
-						live_screen_ID = "6"
-						on_air = False
-					if event.key == pygame.K_7:
-						live_screen_ID = "7"
-						on_air = False
-					if event.key == pygame.K_8:
-						live_screen_ID = "8"
-						on_air = False
-					if event.key == pygame.K_9:
-						live_screen_ID = "9"
-						on_air = False
+						killUserImages()
+
 					if event.key == pygame.K_r:
 						previousKey = "r"
 						showReplay = True
 						showTimer = False
 					if event.key == pygame.K_b:
+						killUserImages()
 						on_air = False
 						if live_screen_ID == "Bars":
 							live_screen_ID = "Scores"
@@ -964,7 +971,6 @@ while running:
 						team1ScoreBox.update()
 						team2ScoreBox.text = str(team2Score)
 						team2ScoreBox.update()
-
 				if on_air == False :
 					if event.key == pygame.K_PERIOD:
 						if live_screen_ID ==  "Scores":
@@ -1001,7 +1007,7 @@ while running:
 						if event.key == pygame.K_UP and LT_box_position_UP > 700:
 							LT_box_position_UP = LT_box_position_UP - 2
 
-
+	draw_userImages()
 	draw_watermark_image()
 	draw_replay_image()
 	pygame.display.update()
