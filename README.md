@@ -46,8 +46,8 @@ w = watermark.png (show/hide)
 If the Raspberry Pi is configured to mount an external
 USB drive to '../../mnt/volume/', 9 user images will be
 read from a FAT32 format USB drive during power-up.
-User Image filenames should be this format:  image1.jpg
-and be 1920 x 1080 pixels.
+User Image filenames should be this format:  image1.png
+and be 1920 x 1080 pixels and contain an alpha (transparency) channel.
 
 Scorpy will also attempt to load 1 watermark image from the same drive.
 It's filename should be this format:  watermark.png
