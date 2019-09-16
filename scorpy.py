@@ -30,6 +30,7 @@
 6.5 Bugfix: timer adjust seconds
 6.6 Blue Titles, Instant Replay.
 6.7 Sticky userImages 1~9. 0 = kill all userImages
+6.8 No overlap on user images.
 
 
 
@@ -42,7 +43,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 6.7"
+scorpy_version = "Scorpy 6.8"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -584,7 +585,6 @@ def draw_userImages():
 		screen.blit(userImage8, full_screen_rect)  # Draw it.
 	if showImage9 == True:
 		screen.blit(userImage9, full_screen_rect)  # Draw it.
-
 def update_tick():
 	global countdown_ticks
 	if timer_running == True:
@@ -844,47 +844,58 @@ while running:
 					if showImage1 == True:
 						showImage1 = False
 					else:
+						killUserImages()
 						showImage1 = True
 				if event.key == pygame.K_2:
 					if showImage2 == True:
 						showImage2 = False
 					else:
+						killUserImages()
 						showImage2 = True
 				if event.key == pygame.K_3:
 					if showImage3 == True:
 						showImage3 = False
 					else:
+						killUserImages()
 						showImage3 = True
 				if event.key == pygame.K_4:
 					if showImage4 == True:
 						showImage4 = False
 					else:
+						killUserImages()
 						showImage4 = True
 				if event.key == pygame.K_5:
 					if showImage5 == True:
 						showImage5 = False
 					else:
+						killUserImages()
 						showImage5 = True
 				if event.key == pygame.K_6:
 					if showImage6 == True:
 						showImage6 = False
 					else:
+						killUserImages()
 						showImage6 = True
 				if event.key == pygame.K_7:
 					if showImage7 == True:
 						showImage7 = False
 					else:
+						killUserImages()
 						showImage7 = True
 				if event.key == pygame.K_8:
 					if showImage8 == True:
 						showImage8 = False
 					else:
+						killUserImages()
 						showImage8 = True
 				if event.key == pygame.K_9:
 					if showImage9 == True:
 						showImage9 = False
 					else:
+						killUserImages()
 						showImage9 = True
+				if event.key == pygame.K_0:
+					killUserImages()
 				if event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
 					previousKey = "space"
 					if activeTextBox > 0:
@@ -920,9 +931,6 @@ while running:
 					if event.key == pygame.K_f:
 						on_air = False
 						live_screen_ID = "Fulltime"
-					if event.key == pygame.K_0:
-						killUserImages()
-
 					if event.key == pygame.K_r:
 						previousKey = "r"
 						showReplay = True
