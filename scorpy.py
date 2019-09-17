@@ -31,6 +31,12 @@
 6.6 Blue Titles, Instant Replay.
 6.7 Sticky userImages 1~9. 0 = kill all userImages
 6.8 No overlap on user images.
+6.9 Tab key on Bars allowed. Replay key kills on-air graphics.
+	Showing Timer on first run.
+	Score reset on team name change
+7.0 Code Tidy.
+
+
 
 
 
@@ -43,7 +49,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 6.8"
+scorpy_version = "Scorpy 7.0"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -93,7 +99,7 @@ LT_box_position_UP = 1045
 LT_box_position_DOWN = 1105
 LT_box_position = LT_box_position_DOWN #  1105 is offscreen, (1045 is onscreen)
 shiftDown = False
-showTimer = False
+showTimer = True
 running = True
 activeTextBox = 0 # 1&2=teamNames;  3&4=scores;  11&12 Titles
 validChars = " `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
@@ -109,8 +115,6 @@ showImage6 = False
 showImage7 = False
 showImage8 = False
 showImage9 = False
-
-
 fontGeneral = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)
 fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
 fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 62)
@@ -309,8 +313,6 @@ def draw_input_screen():
 	global countdown_ticks
 	global countdown_seconds
 	global countdown_minutes
-	global showTimer
-	showTimer = False
 	team1name.green0()
 	team2name.green0()
 	majorTitleName.green0()
@@ -388,7 +390,6 @@ def draw_halftime_screen():
 def draw_fulltime_screen():
 	global countdown_ticks
 	global timer_running
-
 	if countdown_ticks < 1:
 		countdown_ticks = user_minutes * 60
 		timer_running = False
@@ -694,7 +695,11 @@ def killUserImages():
 	showImage8 = False
 	showImage9 = False
 
-
+def updateScoreText():
+	team1ScoreBox.text = str(team1Score)
+	team1ScoreBox.update()
+	team2ScoreBox.text = str(team2Score)
+	team2ScoreBox.update()
 
 
 # ------------------------------------------------
@@ -751,8 +756,9 @@ while running:
 				if live_screen_ID == "input":  # if inputscreen true then
 					live_screen_ID = "Scores"  # exit.
 					activeTextBox = 0
-				elif live_screen_ID != "input" and on_air == False:
+				elif (live_screen_ID != "input" and on_air == False) or live_screen_ID == "Bars":
 					killUserImages()
+					on_air = False
 					activeTextBox = 11  #make active
 					live_screen_ID = "input"
 					draw_input_screen()
@@ -795,6 +801,9 @@ while running:
 						shiftDown = True
 					if event.key == pygame.K_BACKSPACE:
 						team1name.text = team1name.text[:-1]
+						team1Score = 0
+						team2Score = 0
+						updateScoreText()
 					team1name.add_chr(pygame.key.name(event.key))
 					team1name.update()
 				elif activeTextBox == 2:  # move
@@ -813,6 +822,9 @@ while running:
 						shiftDown = True
 					if event.key == pygame.K_BACKSPACE:
 						team2name.text = team2name.text[:-1]
+						team2Score = 0
+						team1Score = 0
+						updateScoreText()
 					team2name.add_chr(pygame.key.name(event.key))
 					team2name.update()
 				elif activeTextBox == 5:  #timer set
@@ -840,6 +852,13 @@ while running:
 				if event.key == pygame.K_w:
 					previousKey = "w"
 					showWatermark = not showWatermark
+				if event.key == pygame.K_r:
+					previousKey = "r"
+					showReplay = True
+					#showTimer = False
+					if on_air == True:
+						transition_trigger = True
+						on_air = False
 				if event.key == pygame.K_1:
 					if showImage1 == True:
 						showImage1 = False
@@ -931,10 +950,6 @@ while running:
 					if event.key == pygame.K_f:
 						on_air = False
 						live_screen_ID = "Fulltime"
-					if event.key == pygame.K_r:
-						previousKey = "r"
-						showReplay = True
-						showTimer = False
 					if event.key == pygame.K_b:
 						killUserImages()
 						on_air = False
@@ -975,10 +990,7 @@ while running:
 						temp1name = team1name
 						team1name = team2name
 						team2name = temp1name
-						team1ScoreBox.text = str(team1Score)
-						team1ScoreBox.update()
-						team2ScoreBox.text = str(team2Score)
-						team2ScoreBox.update()
+						updateScoreText()
 				if on_air == False :
 					if event.key == pygame.K_PERIOD:
 						if live_screen_ID ==  "Scores":
@@ -986,7 +998,6 @@ while running:
 					elif event.key == pygame.K_COMMA:
 						if live_screen_ID ==  "Scores":
 							adjust_timer(-1)
-
 					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
 						activeTextBox = 3
 					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
@@ -996,19 +1007,13 @@ while running:
 							team1Score = team1Score + 1
 						if event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
 							team1Score = team1Score - 1
-						team1ScoreBox.text = str(team1Score)
-						team1ScoreBox.update()
-						team2ScoreBox.text = str(team2Score)
-						team2ScoreBox.update()
+						updateScoreText()
 					if activeTextBox == 4:  # SCORE2 CHANGE
 						if event.key == pygame.K_UP or event.key == pygame.K_KP8:
 							team2Score = team2Score + 1
 						if event.key == pygame.K_DOWN or event.key == pygame.K_KP2:
 							team2Score = team2Score - 1
-						team1ScoreBox.text = str(team1Score)
-						team1ScoreBox.update()
-						team2ScoreBox.text = str(team2Score)
-						team2ScoreBox.update()
+						updateScoreText()
 					if activeTextBox == 0:  # Lower third position adjustments...
 						if event.key == pygame.K_DOWN and LT_box_position_UP < 1045:
 							LT_box_position_UP = LT_box_position_UP + 2
