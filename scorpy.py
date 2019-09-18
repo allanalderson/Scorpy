@@ -5,7 +5,7 @@
 4.3 User Image Help
 4.4 New fulltime and halftime graphics.
 	Timer vanish after 5 seconds below 0:00
-	Timer continues to run during input screen.
+	Timer continues to run during INPUT screen.
 4.5 Score selection indicator.
 4.6 Minor tweeks to score selection screen
 4.7 Now responding to a numeric keypad
@@ -15,27 +15,31 @@
 5.1 Added Watermark
 5.2 Bug Fix no score change during Score screen's first run. Code easier to read
 5.3 Add score swap Variation (v) during score screen.
-5.4 Reset scores to zero if titles screen displayed.
+5.4 Reset SCORES to zero if TITLES screen displayed.
 5.5 Quick access to screens.
 5.6 Tidy LT bar. Repair LT double trigger
 5.7 Clock callable on-air. Corner position tweaks.
 5.8 Refactoring, Quick access score bug fixed.
-5.9 Corner and graphics tweaks, removed diagnostic printouts. Drop-shaddow on big scores
-6.0 Clock display allowed after Replay screen. Team Swap variation allowed on Titles Screen.
+5.9 Corner and graphics tweaks, removed diagnostic printouts. Drop-shaddow on big SCORES
+6.0 Clock display allowed after Replay screen. Team Swap variation allowed on TITLES Screen.
 6.1 Added timer adjust with    <   >   keys.
 6.11 Changed timer adjust for seconds (not minutes)  when off-air.
-6.2 Added Software Version on Bars screen.
+6.2 Added Software Version on BARS screen.
 6.3 Smart countdown reset with user_minutes.
-6.4 Smart erase Titles & Teams
+6.4 Smart erase TITLES & Teams
 6.5 Bugfix: timer adjust seconds
-6.6 Blue Titles, Instant Replay.
+6.6 Blue TITLES, Instant Replay.
 6.7 Sticky userImages 1~9. 0 = kill all userImages
 6.8 No overlap on user images.
-6.9 Tab key on Bars allowed. Replay key kills on-air graphics.
+6.9 Tab key on BARS allowed. Replay key kills on-air graphics.
 	Showing Timer on first run.
 	Score reset on team name change
 7.0 Code Tidy.
-
+7.1 Polite Replay routines.
+7.1a Refactoring
+7.1b more refactoring.
+8.0beta
+8.0 Polite display. (except input screen)
 
 
 
@@ -49,7 +53,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 7.0"
+scorpy_version = "Scorpy 8.0"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -101,10 +105,10 @@ LT_box_position = LT_box_position_DOWN #  1105 is offscreen, (1045 is onscreen)
 shiftDown = False
 showTimer = True
 running = True
-activeTextBox = 0 # 1&2=teamNames;  3&4=scores;  11&12 Titles
+activeTextBox = 0 # 1&2=teamNames;  3&4=SCORES;  11&12 TITLES
 validChars = " `1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
 shiftChars = ' ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
-live_screen_ID = "Bars"
+current_screen_name = "BARS"
 on_air = True
 showImage1 = False
 showImage2 = False
@@ -133,15 +137,17 @@ version_rect.center = versionR.get_rect().center # Use the center from now on.
 
 
 
+current_screen_name = "BARS"
+reqested_screen_name = ""
 
 
-titlesRequestText = " Titles                       "
+TITLESRequestText = " Titles                       "
 teamsRequestText  =  " Teams                     "
 requestFont = pygame.font.Font('scorpy_resources/Fonts/xxii_geom_slab/XXIIGeomSlabDEMO-Bold.otf', 180)
 teamNamesRequestText = requestFont.render(teamsRequestText, True, greenScreen, green2)
 teamNamesRequestText_rect = teamNamesRequestText.get_rect()
-titlesNamesRequestText = requestFont.render(titlesRequestText, True, greenScreen, green2)
-titleNamesRequestText_rect = titlesNamesRequestText.get_rect()
+TITLESNamesRequestText = requestFont.render(TITLESRequestText, True, greenScreen, green2)
+titleNamesRequestText_rect = TITLESNamesRequestText.get_rect()
 bars = screen
 help1 = screen
 full_screen_rect = [0, 0]
@@ -299,15 +305,11 @@ except:
 
 
 
-def draw_bars_screen():
-	screen.blit(bars, full_screen_rect)
-	version_rect.center = [windowSizeX / 2, 140] # Put it somewhere
-	screen.blit(versionR, version_rect)
-def draw_greenscreen():
+def erase_screen():
 	screen.fill(greenScreen)
 	if liveshot == True:
 		screen.blit(liveshot_graphic, full_screen_rect)
-def draw_input_screen():
+def draw_INPUT_screen():
 	global timer_running
 	global countdownTextR
 	global countdown_ticks
@@ -329,7 +331,7 @@ def draw_input_screen():
 	minorTitleName.fontMinorTitle()
 	team1name.fontMinorTitle()
 	team2name.fontMinorTitle()
-	screen.blit(titlesNamesRequestText, [100, 200])
+	screen.blit(TITLESNamesRequestText, [100, 200])
 	screen.blit(teamNamesRequestText, [100, 450])
 	screen.blit(majorTitleName.image, [800, 200])
 	screen.blit(minorTitleName.image, [800, 300])
@@ -358,45 +360,8 @@ def draw_input_screen():
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 	tabexit_rect.center = [windowSizeX / 2, 950] # Put it somewhere
 	screen.blit(tabexitR, tabexit_rect)
-def draw_title_screen():
-	team1name.blue()
-	team2name.blue()
-	majorTitleName.blue()
-	minorTitleName.blue()
-	majorTitleName.rect.center = [(windowSizeX // 2), 180]
-	minorTitleName.rect.center = [(windowSizeX // 2), 315]
-	team1name.rect.center = [(windowSizeX // 2), 580]
-	team2name.rect.center = [(windowSizeX // 2),855]
-	majorTitleName.fontMajorTitle()
-	minorTitleName.fontMinorTitle()
-	team1name.fontTeamVS()
-	team2name.fontTeamVS()
-	screen.blit(titleVS_graphic, full_screen_rect)
-	screen.blit(majorTitleName.image, majorTitleName.rect)
-	screen.blit(minorTitleName.image, minorTitleName.rect)
-	screen.blit(team1name.image, team1name.rect)
-	screen.blit(team2name.image, team2name.rect)
-	draw_OFFAIR_filter()
-def draw_halftime_screen():
-	global countdown_ticks
-	global timer_running
-	# global user_minutes
-	if countdown_ticks < 1:
-		countdown_ticks = user_minutes * 60
-		timer_running = False
-	screen.blit(halfTimeGraphic, full_screen_rect)
-	draw_big_score_screen()
-	draw_OFFAIR_filter()
-def draw_fulltime_screen():
-	global countdown_ticks
-	global timer_running
-	if countdown_ticks < 1:
-		countdown_ticks = user_minutes * 60
-		timer_running = False
-	screen.blit(fullTimeGraphic, full_screen_rect)
-	draw_big_score_screen()
-	draw_OFFAIR_filter()
-def draw_score_screen():
+def draw_LT_screen():
+	pass
 	global LT_rasing
 	global LT_lowering
 	global transition_trigger
@@ -404,15 +369,20 @@ def draw_score_screen():
 	global LT_box_position
 	global activeTextBox
 	global LT_box_position_UP
-
-
-
+	global current_screen_name
+	global reqested_screen_name
+	global activeTextBox
+	global on_air
+	if reqested_screen_name == "SCORES":
+		activeTextBox = 0
+		on_air = False
+		current_screen_name = "SCORES"
+		reqested_screen_name = ""
 	if LT_box_position < 991:
 		lowerThirdBoxThickness = 45 # small box 45
 	if LT_box_position > 990:
 		lowerThirdBoxThickness = 100 # large box 100
-
-	draw_timer_preview()
+	draw_bigGreenTimer()
 	team1name.green3()
 	team2name.green3()
 	team1ScoreBox.green3()
@@ -423,7 +393,6 @@ def draw_score_screen():
 	lowerThirdText.white()
 	lowerThirdText.fontLowerThird()
 	lowerThirdText.update()
-
 	if transition_trigger == True:
 		if on_air == True:
 			LT_rasing = True
@@ -449,9 +418,9 @@ def draw_score_screen():
 		pygame.draw.rect(screen, green3, (0, LT_box_position_UP - 22, windowSizeX, lowerThirdBoxThickness))  #-22
 	if LT_lowering == False or LT_rasing == False:
 		transition_trigger = False # reset the trigger
-	draw_score_preview_screen()
+	draw_bigGreenScores()
 	draw_timer_panel()
-def draw_score_preview_screen():
+def draw_bigGreenScores():
 	team1name.fontTeamNameUnderScore()
 	team2name.fontTeamNameUnderScore()
 	team1name.green3()
@@ -486,8 +455,8 @@ def draw_score_preview_screen():
 	screen.blit(team2name.image, team2name.rect)
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
-	draw_timer_preview()
-def draw_timer_preview():
+	draw_bigGreenTimer()
+def draw_bigGreenTimer():
 	triangleY = 175
 	if counting_down == True:
 		pygame.draw.polygon(screen, green3, [[(windowSizeX // 2-40), (triangleY+100)], [(windowSizeX // 2+40), (triangleY+100)],[(windowSizeX // 2), (triangleY+140)]])
@@ -502,7 +471,7 @@ def draw_timer_preview():
 	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
 	countdown_rect.center = [windowSizeX // 2, 170]  # Put the center of the rect somewhere
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
-def draw_big_score_screen():
+def draw_HalfFulltime_scores():
 	teamNameYoffset = 290 # 260
 	teamScoreYoffset = 120 # 60
 	team1name.fontTeamNameUnderScore()
@@ -553,14 +522,14 @@ def draw_big_score_screen():
 	team2ScoreBox.rect.center = [bigScorePositionRight, (windowSizeY // 2) +teamScoreYoffset]
 	screen.blit(team1ScoreBox.image, team1ScoreBox.rect)
 	screen.blit(team2ScoreBox.image, team2ScoreBox.rect)
-def draw_OFFAIR_filter():
+def draw_offair_filter():
 	global team1Score
 	global team2Score
 	if on_air == False:
 		screen.blit(green_filter, full_screen_rect)
 	else:
-		#  Reset scores to zero if titles displayed.
-		if previousKey =="space" and live_screen_ID == "Titles":
+		#  Reset SCORES to zero if TITLES displayed.
+		if previousKey =="space" and current_screen_name == "TITLES":
 			team1Score = 0
 			team2Score = 0
 			team1ScoreBox.text = str(team1Score)
@@ -599,7 +568,6 @@ def update_clocks():
 	global countdown_seconds
 	global countdown_minutes
 	global showTimer
-
 	if countdown_ticks < -4:
 		showTimer = False
 	if countdown_ticks > -1:
@@ -615,7 +583,6 @@ def update_clocks():
 		countdownMinutesText = str(countdown_minutes)
 	countdownText = countdownMinutesText + ":" + countdownSecondsText
 def draw_timer_panel():
-
 	if showTimer == True and variation_timer < 5:
 		if timer_running == False:
 			countdownTextR = fontDigital_timer.render(countdownText, True, red, black)  # Render it.
@@ -631,8 +598,6 @@ def draw_timer_panel():
 			countdownTextR = fontDigital_timer.render(countdownText, True, white) # Render it.
 	if showTimer == False and variation_timer > 4:
 		countdownTextR = fontDigital_timer.render(countdownText, True, black)  # Render it.
-
-
 	countdown_rect = countdownTextR.get_rect()  # Get the render's rect
 	if variation_timer == 1:
 		countdown_rect.center = corner1  # Put the center of the rect somewhere
@@ -694,41 +659,54 @@ def killUserImages():
 	showImage7 = False
 	showImage8 = False
 	showImage9 = False
-
 def updateScoreText():
 	team1ScoreBox.text = str(team1Score)
 	team1ScoreBox.update()
 	team2ScoreBox.text = str(team2Score)
 	team2ScoreBox.update()
-
-
+def goOffAir():
+	global on_air
+	global transition_trigger
+	if LT_box_position == LT_box_position_UP:
+		transition_trigger = True
+	on_air = False
+def checkScreenChangeConditions():
+	global current_screen_name
+	global reqested_screen_name
+	global showReplay
+	if LT_box_position == LT_box_position_DOWN: # This is the condition.
+		if reqested_screen_name == "BARS" and LT_box_position == LT_box_position_DOWN:
+			current_screen_name = "BARS"
+			reqested_screen_name = ""
+			goOffAir()
+		if reqested_screen_name == "TITLES" and LT_box_position == LT_box_position_DOWN:
+			current_screen_name = "TITLES"
+			reqested_screen_name = ""
+			goOffAir()
+		if reqested_screen_name == "HALFTIME" and LT_box_position == LT_box_position_DOWN:
+			current_screen_name = "HALFTIME"
+			reqested_screen_name = ""
+			goOffAir()
+		if reqested_screen_name == "FULLTIME" and LT_box_position == LT_box_position_DOWN:
+			current_screen_name = "FULLTIME"
+			reqested_screen_name = ""
+			goOffAir()
+		if reqested_screen_name == "HELP1" and LT_box_position == LT_box_position_DOWN:
+			current_screen_name = "HELP1"
+			reqested_screen_name = ""
+			goOffAir()
+		if reqested_screen_name == "SCORES" and LT_box_position == LT_box_position_DOWN:
+			current_screen_name = "SCORES"
+			reqested_screen_name = ""
+			goOffAir()
+		if reqested_screen_name == "REPLAY" and LT_box_position == LT_box_position_DOWN:
+			showReplay = True
+			reqested_screen_name = ""
+			goOffAir()
 # ------------------------------------------------
-
-
 pygame.time.set_timer(USEREVENT + 0, 1000)
 while running:
-	draw_greenscreen()
-	if live_screen_ID == "Titles":
-		draw_title_screen()
-	if live_screen_ID == "Scores":
-		draw_score_screen()
-	if live_screen_ID == "Halftime":
-		draw_halftime_screen()
-	if live_screen_ID == "Fulltime":
-		draw_fulltime_screen()
-	if live_screen_ID == "Bars":
-		draw_bars_screen()
-		draw_OFFAIR_filter()
-	if live_screen_ID == "input":
-		draw_input_screen()
-	if live_screen_ID == "Help1":
-		screen.blit(help1, full_screen_rect)
-		activeTextBox = 0
-
-	if live_screen_ID == "Help2":
-		screen.blit(help2, full_screen_rect)
-		on_air = False
-
+	erase_screen()
 	for event in pygame.event.get():
 		if event.type == USEREVENT + 0:
 			update_tick()
@@ -737,6 +715,7 @@ while running:
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_r:
 				showReplay = False
+				reqested_screen_name = ""
 			if majorTitleName.text == "Major Titl":
 				majorTitleName.text = ""
 			if minorTitleName.text == "Minor Titl":
@@ -749,20 +728,20 @@ while running:
 				shiftDown = False
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
-				if live_screen_ID == "Help2":
+				if current_screen_name == "HELP2":
 					pygame.quit()
 					quit()
 			if event.key == pygame.K_TAB:
-				if live_screen_ID == "input":  # if inputscreen true then
-					live_screen_ID = "Scores"  # exit.
+				if current_screen_name == "INPUT":  # if INPUTscreen true then
+					current_screen_name = "SCORES"  # exit.
 					activeTextBox = 0
-				elif (live_screen_ID != "input" and on_air == False) or live_screen_ID == "Bars":
+				elif (current_screen_name != "INPUT" and on_air == False) or current_screen_name == "BARS":
 					killUserImages()
 					on_air = False
 					activeTextBox = 11  #make active
-					live_screen_ID = "input"
-					draw_input_screen()
-			if live_screen_ID == "input":
+					current_screen_name = "INPUT"
+					draw_INPUT_screen()
+			if current_screen_name == "INPUT":
 				if activeTextBox == 11:  # major title
 					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
 						activeTextBox = 12  # minor title
@@ -832,7 +811,7 @@ while running:
 						activeTextBox = 2
 					if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
 						activeTextBox = 0
-						live_screen_ID = "Titles"  # exit.
+						current_screen_name = "TITLES"  # exit.
 						on_air = False
 					if event.key == pygame.K_LEFT:
 						if countdown_minutes > 20:
@@ -849,16 +828,53 @@ while running:
 							countdown_minutes = countdown_minutes + 1
 					user_minutes = countdown_minutes
 			else:  # ------ NOT THE INPUT SCREEN
+				if event.key == pygame.K_t:
+					killUserImages()
+					reqested_screen_name = "TITLES"
+					if LT_box_position != LT_box_position_DOWN:
+						goOffAir()
+				if event.key == pygame.K_f:
+					killUserImages()
+					reqested_screen_name = "FULLTIME"
+					if LT_box_position != LT_box_position_DOWN:
+						goOffAir()
+				if event.key == pygame.K_h:
+					killUserImages()
+					reqested_screen_name = "HALFTIME"
+					if LT_box_position != LT_box_position_DOWN:
+						goOffAir()
+				if event.key == pygame.K_s:
+					previousKey = "s"
+					killUserImages()
+					reqested_screen_name = "SCORES"
+					if LT_box_position != LT_box_position_DOWN:
+						goOffAir()
+				if event.key == pygame.K_b:
+					killUserImages()
+					if current_screen_name == "BARS":
+						current_screen_name = "SCORES"
+					else:
+						reqested_screen_name = "BARS"
+						if LT_box_position != LT_box_position_DOWN:
+							goOffAir()
+				if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
+					previousKey = "?"
+					if current_screen_name != "HELP1":
+						killUserImages()
+						reqested_screen_name = "HELP1"
+						if LT_box_position != LT_box_position_DOWN:
+							goOffAir()
+					else:
+						current_screen_name = "SCORES"
 				if event.key == pygame.K_w:
 					previousKey = "w"
 					showWatermark = not showWatermark
 				if event.key == pygame.K_r:
+					killUserImages()
+					reqested_screen_name = "REPLAY"
+					if LT_box_position != LT_box_position_DOWN:
+						goOffAir()
 					previousKey = "r"
-					showReplay = True
-					#showTimer = False
-					if on_air == True:
-						transition_trigger = True
-						on_air = False
 				if event.key == pygame.K_1:
 					if showImage1 == True:
 						showImage1 = False
@@ -921,8 +937,8 @@ while running:
 						activeTextBox = 0
 					on_air = not on_air
 					transition_trigger = True
-					if live_screen_ID == "Bars" and activeTextBox == -1:
-						live_screen_ID = "Help1"
+					if current_screen_name == "BARS" and activeTextBox == -1:
+						current_screen_name = "HELP1"
 						on_air = False
 						activeTextBox = 11
 				if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
@@ -932,44 +948,14 @@ while running:
 					pass
 					timer_running = True
 				if event.key == pygame.K_c or event.key == pygame.K_KP_MULTIPLY:
-					if live_screen_ID == "Scores":
+					if current_screen_name == "SCORES":
 						previousKey = "c"
 						showTimer = not showTimer
-				if LT_box_position == LT_box_position_DOWN:
-					if event.key == pygame.K_t:
-						live_screen_ID = "Titles"
-						on_air = False
-					if event.key == pygame.K_s:
-						previousKey = "s"
-						live_screen_ID = "Scores"
-						activeTextBox = 0
-						on_air = False
-					if event.key == pygame.K_h:
-						on_air = False
-						live_screen_ID = "Halftime"
-					if event.key == pygame.K_f:
-						on_air = False
-						live_screen_ID = "Fulltime"
-					if event.key == pygame.K_b:
-						killUserImages()
-						on_air = False
-						if live_screen_ID == "Bars":
-							live_screen_ID = "Scores"
-							on_air = False
-						elif on_air == False:
-							live_screen_ID = "Bars"
-					if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
-						on_air = False
-						previousKey = "?"
-						if live_screen_ID != "Help1":
-							live_screen_ID = "Help1"
-						else:
-							live_screen_ID = "Scores"
 				if event.key == pygame.K_v:
-					if live_screen_ID == "Help2":
-						live_screen_ID = "Help1"
-					elif live_screen_ID == "Help1":
-						live_screen_ID = "Help2"
+					if current_screen_name == "HELP2":
+						current_screen_name = "HELP1"
+					elif current_screen_name == "HELP1":
+						current_screen_name = "HELP2"
 					if previousKey == "r":
 						variation_replay = variation_replay + 1
 						if variation_replay > 4:
@@ -978,12 +964,12 @@ while running:
 						variation_watermark = variation_watermark + 1
 						if variation_watermark > 4:
 							variation_watermark = 1
-					if previousKey == "c" and live_screen_ID == "Scores":
+					if previousKey == "c" and current_screen_name == "SCORES":
 						variation_timer = variation_timer + 1
 						if variation_timer > 5:
 							variation_timer = 1
-					if live_screen_ID == "Fulltime" or live_screen_ID == "Titles" or live_screen_ID == "Halftime" or (
-							previousKey == "s" and live_screen_ID == "Scores"):
+					if current_screen_name == "FULLTIME" or current_screen_name == "TITLES" or current_screen_name == "HALFTIME" or (
+							previousKey == "s" and current_screen_name == "SCORES"):
 						temp1score = team1Score
 						team1Score = team2Score
 						team2Score = temp1score
@@ -993,10 +979,10 @@ while running:
 						updateScoreText()
 				if on_air == False :
 					if event.key == pygame.K_PERIOD:
-						if live_screen_ID ==  "Scores":
+						if current_screen_name == "SCORES":
 							adjust_timer(1)
 					elif event.key == pygame.K_COMMA:
-						if live_screen_ID ==  "Scores":
+						if current_screen_name == "SCORES":
 							adjust_timer(-1)
 					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
 						activeTextBox = 3
@@ -1019,10 +1005,60 @@ while running:
 							LT_box_position_UP = LT_box_position_UP + 2
 						if event.key == pygame.K_UP and LT_box_position_UP > 700:
 							LT_box_position_UP = LT_box_position_UP - 2
+	checkScreenChangeConditions()
+	if current_screen_name == "BARS":
+		screen.blit(bars, full_screen_rect)
+		version_rect.center = [windowSizeX / 2, 140]  # Put it somewhere
+		screen.blit(versionR, version_rect)
+		draw_offair_filter()
+	if current_screen_name == "TITLES":
+		team1name.blue()
+		team2name.blue()
+		majorTitleName.blue()
+		minorTitleName.blue()
+		majorTitleName.rect.center = [(windowSizeX // 2), 180]
+		minorTitleName.rect.center = [(windowSizeX // 2), 315]
+		team1name.rect.center = [(windowSizeX // 2), 580]
+		team2name.rect.center = [(windowSizeX // 2),855]
+		majorTitleName.fontMajorTitle()
+		minorTitleName.fontMinorTitle()
+		team1name.fontTeamVS()
+		team2name.fontTeamVS()
+		screen.blit(titleVS_graphic, full_screen_rect)
+		screen.blit(majorTitleName.image, majorTitleName.rect)
+		screen.blit(minorTitleName.image, minorTitleName.rect)
+		screen.blit(team1name.image, team1name.rect)
+		screen.blit(team2name.image, team2name.rect)
+		draw_offair_filter()
+	if current_screen_name == "HALFTIME":
+		if countdown_ticks < 1:
+			countdown_ticks = user_minutes * 60
+			timer_running = False
+		screen.blit(halfTimeGraphic, full_screen_rect)
+		draw_HalfFulltime_scores()
+		draw_offair_filter()
+	if current_screen_name == "FULLTIME":
+		if countdown_ticks < 1:
+			countdown_ticks = user_minutes * 60
+			timer_running = False
+		screen.blit(fullTimeGraphic, full_screen_rect)
+		draw_HalfFulltime_scores()
+		draw_offair_filter()
+	if current_screen_name == "HELP1":
+		screen.blit(help1, full_screen_rect)
+		activeTextBox = 0
+	if current_screen_name == "HELP2":
+		screen.blit(help2, full_screen_rect)
+		on_air = False
+	if current_screen_name == "INPUT":
+		draw_INPUT_screen()
+	if current_screen_name == "SCORES":
+		draw_LT_screen()
 
 	draw_userImages()
 	draw_watermark_image()
 	draw_replay_image()
 	pygame.display.update()
 	clock.tick(25)
+
 pygame.quit()
