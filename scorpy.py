@@ -41,6 +41,8 @@
 8.0beta
 8.0 Polite display. (except input screen)
 8.1 Seconds adjust polite.
+8.2 Seconds and minutes adjustments are polite.
+
 
 
 
@@ -54,7 +56,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 8.1"
+scorpy_version = "Scorpy 8.2"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -633,12 +635,13 @@ def draw_replay_image():
 		if variation_replay == 4:
 			replay_rect.center = corner4
 		screen.blit(replay, replay_rect)
-def adjust_timer(tick_delta):
+def adjust_seconds(tick_delta):
 	global countdown_ticks
 	global countdown_seconds
 	global countdown_minutes
-	if current_screen_name == "SCORES":
-		goOffAir()
+	if current_screen_name == "SCORES" and on_air == True:
+			goOffAir()
+	else:
 		countdown_ticks = countdown_ticks + tick_delta
 		countdown_seconds = countdown_ticks % 60
 		countdown_minutes = countdown_ticks//60
@@ -832,9 +835,14 @@ while running:
 					user_minutes = countdown_minutes
 			else:  # ------ NOT THE INPUT SCREEN
 				if event.key == pygame.K_PERIOD:
-					adjust_timer(1)
+					adjust_seconds(1)
 				if event.key == pygame.K_COMMA:
-					adjust_timer(-1)
+					adjust_seconds(-1)
+				if event.key == pygame.K_GREATER: # Doesn't work on mac?
+					adjust_seconds(60)
+				if event.key == pygame.K_LESS:
+					adjust_seconds(-60)
+
 				if event.key == pygame.K_t:
 					killUserImages()
 					reqested_screen_name = "TITLES"
