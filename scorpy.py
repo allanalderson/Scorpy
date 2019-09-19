@@ -40,6 +40,7 @@
 7.1b more refactoring.
 8.0beta
 8.0 Polite display. (except input screen)
+8.1 Seconds adjust polite.
 
 
 
@@ -53,7 +54,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 8.0"
+scorpy_version = "Scorpy 8.1"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -636,10 +637,12 @@ def adjust_timer(tick_delta):
 	global countdown_ticks
 	global countdown_seconds
 	global countdown_minutes
-	countdown_ticks = countdown_ticks + tick_delta
-	countdown_seconds = countdown_ticks % 60
-	countdown_minutes = countdown_ticks//60
-	update_clocks()
+	if current_screen_name == "SCORES":
+		goOffAir()
+		countdown_ticks = countdown_ticks + tick_delta
+		countdown_seconds = countdown_ticks % 60
+		countdown_minutes = countdown_ticks//60
+		update_clocks()
 def killUserImages():
 	global showImage1
 	global showImage2
@@ -828,6 +831,10 @@ while running:
 							countdown_minutes = countdown_minutes + 1
 					user_minutes = countdown_minutes
 			else:  # ------ NOT THE INPUT SCREEN
+				if event.key == pygame.K_PERIOD:
+					adjust_timer(1)
+				if event.key == pygame.K_COMMA:
+					adjust_timer(-1)
 				if event.key == pygame.K_t:
 					killUserImages()
 					reqested_screen_name = "TITLES"
@@ -978,12 +985,7 @@ while running:
 						team2name = temp1name
 						updateScoreText()
 				if on_air == False :
-					if event.key == pygame.K_PERIOD:
-						if current_screen_name == "SCORES":
-							adjust_timer(1)
-					elif event.key == pygame.K_COMMA:
-						if current_screen_name == "SCORES":
-							adjust_timer(-1)
+
 					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
 						activeTextBox = 3
 					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
