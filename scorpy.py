@@ -42,7 +42,9 @@
 8.0 Polite display. (except input screen)
 8.1 Seconds adjust polite.
 8.2 Seconds and minutes adjustments are polite.
-
+8.3 Input screen polite.
+8.4 Next Up graphic variation installed.
+8.6 More Graphics and 6 title variations.
 
 
 
@@ -56,7 +58,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 8.2"
+scorpy_version = "Scorpy 8.6"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -78,6 +80,7 @@ timer_running = False
 variation_timer = 5
 variation_replay = 1
 variation_watermark = 3
+variation_titles = 3
 countdown_ticks = (countdown_minutes*60)+(countdown_seconds)
 countdownMinutesText = str(countdown_minutes)
 previousKey = "0"
@@ -122,10 +125,10 @@ showImage6 = False
 showImage7 = False
 showImage8 = False
 showImage9 = False
-fontGeneral = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 60)
+fontGeneral = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 55)
 fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
-fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 62)
-tabexit = " Use curser keys to move,  TAB key to exit. "
+fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 60)
+tabexit = " Use curser keys to move "
 tabexitR = fontGeneral.render(tabexit, True, greenScreen, green2)
 tabexit_rect = tabexitR.get_rect()
 tabexit_rect.center = tabexitR.get_rect().center # Get it's dimentions.
@@ -158,11 +161,13 @@ full_screen_rect = bars.get_rect()
 full_screen_rect.center = screen.get_rect().center  # Set image centers
 bars = pygame.image.load('scorpy_resources/Graphics/bars1080.png').convert()
 halfTimeGraphic = pygame.image.load('scorpy_resources/Graphics/halfTimeImage.png').convert_alpha()
+nextUpGraphic = pygame.image.load('scorpy_resources/Graphics/upNext.png').convert_alpha()
 fullTimeGraphic = pygame.image.load('scorpy_resources/Graphics/fullTimeImage.png').convert_alpha()
 help1 = pygame.image.load('scorpy_resources/Graphics/help1.png').convert()
 help2 = pygame.image.load('scorpy_resources/Graphics/help2.png').convert()
 liveshot_graphic = pygame.image.load('scorpy_resources/Graphics/liveshot.png').convert()
-titleVS_graphic = pygame.image.load('scorpy_resources/Graphics/VS_graphic.png').convert_alpha()
+VS_title_graphic1 = pygame.image.load('scorpy_resources/Graphics/VS_graphic1.png').convert_alpha()
+VS_title_graphic2 = pygame.image.load('scorpy_resources/Graphics/VS_graphic2.png').convert_alpha()
 replay = pygame.image.load('scorpy_resources/Graphics/replay.png').convert_alpha()
 corner1 = [(windowSizeX // 2) - 800, (windowSizeY // 2) + 440] # bottom, left
 corner2 = [(windowSizeX // 2) - 800, (windowSizeY // 2) - 470] # top, left
@@ -254,7 +259,7 @@ team2ScoreBox = TextBox()
 team2ScoreBox.text = str(team2Score)
 lowerThirdText = TextBox()
 lowerThirdText.text = ""
-
+showNEXTUP = False
 
 watermark = pygame.image.load('scorpy_resources/Graphics/watermark.png').convert_alpha()
 try:
@@ -613,7 +618,7 @@ def draw_timer_panel():
 	if variation_timer == 5: # lower third position
 		countdown_rect.center = [(windowSizeX // 2), LT_box_position + 2]
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
-def draw_watermark_image():
+def draw_WATERMARK_graphic():
 	if showWatermark == True:
 		if variation_watermark == 1:
 			watermark_rect.center = corner1  # Put it somewhere
@@ -624,7 +629,7 @@ def draw_watermark_image():
 		if variation_watermark == 4:
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
-def draw_replay_image():
+def draw_REPLAY_graphic():
 	if showReplay == True:
 		if variation_replay == 1:
 			replay_rect.center = corner1
@@ -676,39 +681,60 @@ def goOffAir():
 	if LT_box_position == LT_box_position_UP:
 		transition_trigger = True
 	on_air = False
+def swapTeamNamePositions():
+	global team1Score
+	global team2Score
+	global team1name
+	global team2name
+
+	temp1score = team1Score
+	team1Score = team2Score
+	team2Score = temp1score
+	temp1name = team1name
+	team1name = team2name
+	team2name = temp1name
+
 def checkScreenChangeConditions():
 	global current_screen_name
 	global reqested_screen_name
 	global showReplay
+
+
 	if LT_box_position == LT_box_position_DOWN: # This is the condition.
-		if reqested_screen_name == "BARS" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "BARS":
 			current_screen_name = "BARS"
 			reqested_screen_name = ""
 			goOffAir()
-		if reqested_screen_name == "TITLES" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "TITLES":
 			current_screen_name = "TITLES"
 			reqested_screen_name = ""
 			goOffAir()
-		if reqested_screen_name == "HALFTIME" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "HALFTIME":
 			current_screen_name = "HALFTIME"
 			reqested_screen_name = ""
 			goOffAir()
-		if reqested_screen_name == "FULLTIME" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "FULLTIME":
 			current_screen_name = "FULLTIME"
 			reqested_screen_name = ""
 			goOffAir()
-		if reqested_screen_name == "HELP1" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "HELP1":
 			current_screen_name = "HELP1"
 			reqested_screen_name = ""
 			goOffAir()
-		if reqested_screen_name == "SCORES" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "SCORES":
 			current_screen_name = "SCORES"
 			reqested_screen_name = ""
 			goOffAir()
-		if reqested_screen_name == "REPLAY" and LT_box_position == LT_box_position_DOWN:
+		if reqested_screen_name == "REPLAY":
 			showReplay = True
 			reqested_screen_name = ""
 			goOffAir()
+
+		if reqested_screen_name == "INPUT":
+			current_screen_name = "INPUT"
+			reqested_screen_name = ""
+			goOffAir()
+
 # ------------------------------------------------
 pygame.time.set_timer(USEREVENT + 0, 1000)
 while running:
@@ -741,12 +767,16 @@ while running:
 				if current_screen_name == "INPUT":  # if INPUTscreen true then
 					current_screen_name = "SCORES"  # exit.
 					activeTextBox = 0
-				elif (current_screen_name != "INPUT" and on_air == False) or current_screen_name == "BARS":
-					killUserImages()
-					on_air = False
-					activeTextBox = 11  #make active
-					current_screen_name = "INPUT"
-					draw_INPUT_screen()
+				elif current_screen_name != "INPUT":
+					if on_air == True: #xxxx
+						reqested_screen_name = "INPUT"
+						activeTextBox = 11  #make active
+						goOffAir()
+					else:
+						killUserImages()
+						activeTextBox = 11  #make active
+						reqested_screen_name = "INPUT"
+
 			if current_screen_name == "INPUT":
 				if activeTextBox == 11:  # major title
 					if event.key == pygame.K_DOWN or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
@@ -842,8 +872,8 @@ while running:
 					adjust_seconds(60)
 				if event.key == pygame.K_LESS:
 					adjust_seconds(-60)
-
 				if event.key == pygame.K_t:
+					previousKey = "t"
 					killUserImages()
 					reqested_screen_name = "TITLES"
 					if LT_box_position != LT_box_position_DOWN:
@@ -983,17 +1013,16 @@ while running:
 						variation_timer = variation_timer + 1
 						if variation_timer > 5:
 							variation_timer = 1
-					if current_screen_name == "FULLTIME" or current_screen_name == "TITLES" or current_screen_name == "HALFTIME" or (
-							previousKey == "s" and current_screen_name == "SCORES"):
-						temp1score = team1Score
-						team1Score = team2Score
-						team2Score = temp1score
-						temp1name = team1name
-						team1name = team2name
-						team2name = temp1name
+					if previousKey == "s" and current_screen_name == "SCORES":
+						swapTeamNamePositions()
 						updateScoreText()
-				if on_air == False :
+					if  current_screen_name == "TITLES":
+						variation_titles = variation_titles + 1
+						goOffAir()
+						if variation_titles > 6:
+							variation_titles = 1
 
+				if on_air == False :
 					if event.key == pygame.K_LEFT or event.key == pygame.K_KP4:  # Team1 score select
 						activeTextBox = 3
 					if event.key == pygame.K_RIGHT or event.key == pygame.K_KP6:  # Team2 score select
@@ -1034,11 +1063,39 @@ while running:
 		minorTitleName.fontMinorTitle()
 		team1name.fontTeamVS()
 		team2name.fontTeamVS()
-		screen.blit(titleVS_graphic, full_screen_rect)
-		screen.blit(majorTitleName.image, majorTitleName.rect)
-		screen.blit(minorTitleName.image, minorTitleName.rect)
-		screen.blit(team1name.image, team1name.rect)
-		screen.blit(team2name.image, team2name.rect)
+		if variation_titles == 1: # Just title
+			screen.blit(majorTitleName.image, majorTitleName.rect)
+			screen.blit(minorTitleName.image, minorTitleName.rect)
+		if variation_titles == 2:#  Title and upNext
+			screen.blit(majorTitleName.image, majorTitleName.rect)
+			screen.blit(minorTitleName.image, minorTitleName.rect)
+			screen.blit(nextUpGraphic, full_screen_rect)  # Draw it.
+		if variation_titles == 3:# Title, Names and Graphic1
+			screen.blit(majorTitleName.image, majorTitleName.rect)
+			screen.blit(minorTitleName.image, minorTitleName.rect)
+			screen.blit(VS_title_graphic1, full_screen_rect)
+			screen.blit(team1name.image, team1name.rect)
+			screen.blit(team2name.image, team2name.rect)
+		if variation_titles == 4:  # Title, Names  Graphic1 and Next up
+			screen.blit(majorTitleName.image, majorTitleName.rect)
+			screen.blit(minorTitleName.image, minorTitleName.rect)
+			screen.blit(VS_title_graphic1, full_screen_rect)
+			screen.blit(team1name.image, team1name.rect)
+			screen.blit(team2name.image, team2name.rect)
+			screen.blit(nextUpGraphic, full_screen_rect)  # Draw it.
+		if variation_titles == 5:  # Title, Names  Graphic2
+			screen.blit(majorTitleName.image, majorTitleName.rect)
+			screen.blit(minorTitleName.image, minorTitleName.rect)
+			screen.blit(VS_title_graphic2, full_screen_rect)
+			screen.blit(team1name.image, team1name.rect)
+			screen.blit(team2name.image, team2name.rect)
+		if variation_titles == 6:  # Title, Names  Graphic2 and Next up
+			screen.blit(majorTitleName.image, majorTitleName.rect)
+			screen.blit(minorTitleName.image, minorTitleName.rect)
+			screen.blit(VS_title_graphic2, full_screen_rect)
+			screen.blit(team1name.image, team1name.rect)
+			screen.blit(team2name.image, team2name.rect)
+			screen.blit(nextUpGraphic, full_screen_rect)  # Draw it.
 		draw_offair_filter()
 	if current_screen_name == "HALFTIME":
 		if countdown_ticks < 1:
@@ -1066,8 +1123,8 @@ while running:
 		draw_LT_screen()
 
 	draw_userImages()
-	draw_watermark_image()
-	draw_replay_image()
+	draw_WATERMARK_graphic()
+	draw_REPLAY_graphic()
 	pygame.display.update()
 	clock.tick(25)
 
