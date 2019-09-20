@@ -13,7 +13,7 @@ Keyboard operation:
 
 curser (up, down, left, right): Move/adjust scores.
 
-tab = Set the team-names and timer (tab again to exit)
+tab = Set the team-names and timer.
 
 spacebar = On-air / Off-air toggle.
 
@@ -31,9 +31,9 @@ c = Clock (show/hide).
 
 '-' = Clock stop.
 
-<  > = Adjust countdown seconds
+<  > = Adjust countdown seconds (or minutes)
 
-v = Variation on the current theme.
+v = Variation to current screen.
 
 b = Bars (but no tone)
 
@@ -46,7 +46,7 @@ w = watermark.png (show/hide)
 0 = Kill all user images.
 
 If the Raspberry Pi is configured to mount an external
-USB drive to '../../mnt/volume/', 9 user images will be
+USB drive to '../../mnt/volume/', nine user images will be
 read from a FAT32 format USB drive during power-up.
 User Image filenames should be this format:  image1.png
 and be 1920 x 1080 pixels and contain an alpha (transparency) channel.
