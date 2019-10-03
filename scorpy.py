@@ -53,6 +53,7 @@
 9b5 Safty Timer accessable in Input screen
 9b6 messages3 ok
 9.0 Release.
+9.1 Tidy up
 
 
 
@@ -68,7 +69,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 9.0"
+scorpy_version = "Scorpy 9.1"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -101,7 +102,7 @@ white = (250,250,250)
 yellow = (220,200,160)
 black = (0,0,0)
 blue = (30, 30, 140)
-red = (250, 80, 80)
+red = (250, 60, 60)
 greenScreen = (0, 150, 0)
 green2 = (0, 175, 0)
 green3 = (10, 195, 10)
@@ -137,7 +138,7 @@ showImage_8 = False
 showImage_9 = False
 fontGeneral = pygame.font.Font('scorpy_resources/Fonts/Roboto-Medium.ttf', 55)
 fontDigital_big = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 260)
-fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 60)
+fontDigital_timer = pygame.font.Font('scorpy_resources/Fonts/digital-7 (mono).ttf', 55)
 advertMenu = " Messages...     "
 messagesR = fontGeneral.render(advertMenu, True, greenScreen, green2)
 advertMenu_rect = messagesR.get_rect()
@@ -457,7 +458,6 @@ def draw_LT_screen():
 		LT_counter = LT_counter - 1 # raise
 	else:
 		LT_rasing = False
-
 	if LT_lowering == True and LT_box_position < LT_box_position_DOWN: # 1105 is below screen
 		LT_counter = LT_counter + 1 # lower
 	else:
@@ -465,9 +465,9 @@ def draw_LT_screen():
 	LT_box_position = LT_box_position_DOWN + (LT_counter * (LT_box_position_DOWN - LT_box_position_UP) // 10)
 	screen.blit(lowerThirdText.image, lowerThirdText.rect)
 	if on_air == False and LT_lowering == False and LT_rasing == False: # lower thirds off-air marker...
-		if LT_box_position_UP - 22 < 991:
+		if LT_box_position_UP < 991:
 			lowerThirdBoxThickness = 45  # 45 small box
-		if LT_box_position_UP - 22 > 990:
+		if LT_box_position_UP > 990:
 			lowerThirdBoxThickness = 100  # 100 large box
 		pygame.draw.rect(screen, green3, (0, LT_box_position_UP - 22, windowSizeX, lowerThirdBoxThickness))  #-22
 	if LT_lowering == False or LT_rasing == False:
@@ -594,8 +594,7 @@ def draw_user_data():
 			screen.blit(message_1.image, [windowSizeX / 2 - message_1centers[0], LT_box_position_UP - 26]) # LT_box_position_UP-20
 		else:
 			screen.blit(userImage_1, full_screen_rect)  # Draw it.
-
-	if showImage_2 == True:
+	elif showImage_2 == True:
 		message_2centers = message_2.image.get_rect().center
 		if useMessage_2 == True:
 			if current_screen_name == "SCORES":
@@ -606,8 +605,7 @@ def draw_user_data():
 			            [windowSizeX / 2 - message_2centers[0], LT_box_position_UP - 26])  # LT_box_position_UP-20
 		else:
 			screen.blit(userImage_2, full_screen_rect)  # Draw it.
-
-	if showImage_3 == True:
+	elif showImage_3 == True:
 		message_3centers = message_3.image.get_rect().center
 		if useMessage_3 == True:
 			if current_screen_name == "SCORES":
@@ -618,19 +616,17 @@ def draw_user_data():
 			            [windowSizeX / 2 - message_3centers[0], LT_box_position_UP - 26])  # LT_box_position_UP-20
 		else:
 			screen.blit(userImage_3, full_screen_rect)  # Draw it.
-
-
-	if showImage_4 == True:
+	elif showImage_4 == True:
 		screen.blit(userImage_4, full_screen_rect)  # Draw it.
-	if showImage_5 == True:
+	elif showImage_5 == True:
 		screen.blit(userImage_5, full_screen_rect) # Draw it.
-	if showImage_6 == True:
+	elif showImage_6 == True:
 		screen.blit(userImage_6, full_screen_rect)  # Draw it.
-	if showImage_7 == True:
+	elif showImage_7 == True:
 		screen.blit(userImage_7, full_screen_rect) # Draw it.
-	if showImage_8 == True:
+	elif showImage_8 == True:
 		screen.blit(userImage_8, full_screen_rect)  # Draw it.
-	if showImage_9 == True:
+	elif showImage_9 == True:
 		screen.blit(userImage_9, full_screen_rect)  # Draw it.
 def update_tick():
 	global countdown_ticks
@@ -685,28 +681,28 @@ def draw_timer_panel():
 	if variation_timer == 4:
 		countdown_rect.center = corner4  # Put the center of the rect somewhere
 	if variation_timer == 5: # lower third position
-		countdown_rect.center = [(windowSizeX // 2), LT_box_position + 2]
+		countdown_rect.center = [(windowSizeX // 2), LT_box_position]
 	screen.blit(countdownTextR, countdown_rect)  # Draw the render, here.
 def draw_WATERMARK_graphic():
 	if showWatermark == True:
 		if variation_watermark == 1:
 			watermark_rect.center = corner1  # Put it somewhere
-		if variation_watermark == 2:
+		elif variation_watermark == 2:
 			watermark_rect.center = corner2  # Put it somewhere
-		if variation_watermark == 3:
+		elif variation_watermark == 3:
 			watermark_rect.center = corner3  # Put it somewhere
-		if variation_watermark == 4:
+		elif variation_watermark == 4:
 			watermark_rect.center = corner4  # Put it somewhere
 		screen.blit(watermark, watermark_rect)  # Draw it.
 def draw_REPLAY_graphic():
 	if showReplay == True:
 		if variation_replay == 1:
 			replay_rect.center = corner1
-		if variation_replay == 2:
+		elif variation_replay == 2:
 			replay_rect.center = corner2
-		if variation_replay == 3:
+		elif variation_replay == 3:
 			replay_rect.center =corner3
-		if variation_replay == 4:
+		elif variation_replay == 4:
 			replay_rect.center = corner4
 		screen.blit(replay, replay_rect)
 def adjust_seconds(tick_delta):
