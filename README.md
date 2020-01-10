@@ -41,7 +41,9 @@ w = watermark.png (show/hide)
 
 ? = help screen.
 
-1~9 User images (e.g:  image1.png @ 1920x1080).
+3 messages can be displayed.
+
+4~9 User images (e.g:  image4.png @ 1920x1080).
 
 0 = Kill all user images.
 
