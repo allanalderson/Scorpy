@@ -79,7 +79,7 @@ team2Score = 0
 # sys.path.append('/boot/')
 liveshot = False
 screen = pygame.display.set_mode([windowSizeX, windowSizeY])
-screen = pygame.display.set_mode([windowSizeX, windowSizeY], pygame.FULLSCREEN)
+#screen = pygame.display.set_mode([windowSizeX, windowSizeY], pygame.FULLSCREEN)
 pygame.mouse.set_visible(False)
 dropShaddowDistance = 4
 bigScorePositionRight = 1443
