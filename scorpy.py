@@ -54,6 +54,7 @@
 9b6 messages3 ok
 9.0 Release.
 9.1 Tidy up
+9.2 blue text now appears as white
 
 
 
@@ -69,7 +70,7 @@ import os
 import sys
 
 
-scorpy_version = "Scorpy 9.1"
+scorpy_version = "Scorpy 9.2"
 sys.path.append('../../mnt/volume/')
 pygame.init()
 windowSizeX = 1920
@@ -101,7 +102,7 @@ counting_down = True
 white = (250,250,250)
 yellow = (220,200,160)
 black = (0,0,0)
-blue = (30, 30, 140)
+blue = (200, 200, 240)
 red = (250, 60, 60)
 greenScreen = (0, 150, 0)
 green2 = (0, 175, 0)
